@@ -7,28 +7,28 @@ import {
   toUIMessageStream,
   type UIMessage,
 } from 'ai';
+import { buildSyllaSystemPrompt } from '@/lib/sylla/prompts';
 
 export const maxDuration = 30;
-
-const SYSTEM_PROMPT = `You are Sylla, a helpful academic study assistant. You help students break down study tasks, understand academic content, plan their workload, and turn learning goals into clear next steps. You are not an official university service and should not claim access to official university systems, student records, grades, enrolment information, or privileged data.
-
-Behaviour:
-- Be practical and concise.
-- Help with study planning, task breakdowns, checklists, explanations, and productivity.
-- Do not claim to access official Macquarie University systems.
-- Do not provide official academic advice.
-- Encourage users to verify important academic requirements through official university sources.`;
 
 // Payload sanity limits (this is a soft gate; the real anonymous limit is
 // enforced client-side in Phase 1).
 const MAX_MESSAGES = 40;
 
+// This route is the single AI entry point for BOTH deployment modes:
+// - standalone Sylla (anonymous preview + signed-in users)
+// - embedded Sylla inside Syllabus Sync (always signed in)
+//
 // TODO(phase 2): resolve the signed-in user via lib/supabase/server.ts
-// createServerClient() and enforce the anonymous limit + per-user rate
-// limiting server-side.
-// TODO(phase 2): persist conversations to Supabase (sylla_conversations /
-// sylla_messages) for signed-in users.
-// TODO(phase 3): RAG over user-provided unit guides (vector search).
+// createServerClient(); enforce the anonymous limit + per-user rate limiting
+// server-side, and record a row in sylla_usage_events.
+// TODO(phase 2): persist conversations for signed-in users
+// (sylla_conversations / sylla_messages, RLS-scoped to the user).
+// TODO(embedded): accept an optional context payload (tasks, deadlines,
+// units) from the Syllabus Sync host app and pass it to
+// buildSyllaSystemPrompt(context).
+// TODO(rag): retrieve relevant chunks from the user's uploaded documents
+// (sylla_documents) and inject them into the prompt context.
 
 export async function POST(req: Request) {
   let messages: UIMessage[];
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: google('gemini-2.5-flash'),
-    system: SYSTEM_PROMPT,
+    system: buildSyllaSystemPrompt(),
     messages: await convertToModelMessages(messages),
   });
 

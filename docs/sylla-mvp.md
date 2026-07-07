@@ -35,14 +35,17 @@ flow reuses Syllabus Sync's existing `/login` page.
 | --- | --- |
 | `app/sylla/page.tsx` | Chat page (hero, disclaimer, chat panel) |
 | `app/api/sylla/chat/route.ts` | Streaming chat endpoint + system prompt |
-| `components/sylla/SyllaChat.tsx` | Client orchestrator (`useChat`) |
+| `components/sylla/SyllaChatPanel.tsx` | Mode-agnostic chat core (`useChat`) — see [sylla-architecture.md](./sylla-architecture.md) |
+| `components/sylla/SyllaChat.tsx` | Standalone wrapper: anonymous gate + sign-in CTA |
+| `components/sylla/SyllaFloatingButton.tsx` | Embedded-mode launcher preview (not mounted yet) |
 | `components/sylla/ChatMessage.tsx` | Message bubble |
 | `components/sylla/ChatInput.tsx` | Textarea (Enter sends, Shift+Enter newline) |
 | `components/sylla/PromptChips.tsx` | Example prompt chips |
 | `components/sylla/UsageLimitNotice.tsx` | Limit-reached card + sign-in CTA |
 | `components/sylla/SyllaEmptyState.tsx` | Empty conversation state |
 | `lib/sylla/config.ts` | Limits, copy, sign-in URL helper |
-| `lib/sylla/useAnonymousLimit.ts` | localStorage counter + Supabase session check |
+| `lib/sylla/prompts.ts` | Shared system prompt + future context builder |
+| `lib/sylla/usage-limit.ts` | localStorage counter + Supabase session check (standalone only) |
 | `lib/supabase/client.ts` / `server.ts` | Shared-project Supabase clients |
 
 ## Anonymous free-message limit

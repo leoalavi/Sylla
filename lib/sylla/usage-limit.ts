@@ -42,9 +42,13 @@ function incrementStoredCount(): void {
  * Tracks the anonymous free-message allowance in localStorage and lifts the
  * limit for signed-in Supabase users.
  *
+ * STANDALONE MODE ONLY: the embedded assistant inside Syllabus Sync never
+ * uses this hook — its users are always signed in via the host app session.
+ *
  * Phase 1 is intentionally client-side only — it is a soft preview gate, not
  * a security boundary. TODO(phase 2): enforce the limit server-side in
- * /api/sylla/chat once the Supabase session is shared with Syllabus Sync.
+ * /api/sylla/chat (and log sylla_usage_events) once the Supabase session is
+ * shared with Syllabus Sync.
  */
 export function useAnonymousLimit() {
   const usedCount = useSyncExternalStore(subscribe, readStoredCount, () => 0);
