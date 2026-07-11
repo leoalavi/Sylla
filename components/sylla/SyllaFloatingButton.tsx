@@ -1,28 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { SyllaChatPanel } from '@/components/sylla/SyllaChatPanel';
+import { ChatView } from '@/components/chat/ChatView';
 
 /**
  * EMBEDDED MODE (preview) — floating assistant launcher for Syllabus Sync.
  *
- * This component is not mounted anywhere in the standalone Sylla app. It is
- * the integration point for Phase 2+, when Sylla is embedded inside
- * Syllabus Sync as a Notion-AI-style assistant. It exists now so the shared
- * `SyllaChatPanel` API is proven against both modes.
+ * Not mounted anywhere in the standalone Sylla app. It is the integration
+ * point for the phase where Sylla is embedded inside Syllabus Sync as a
+ * Notion-AI-style assistant, and exists now to prove the shared ChatView
+ * works in both modes.
  *
  * Integration TODOs for the Syllabus Sync host app:
- * - TODO(embedded): read the current Syllabus Sync Supabase session — users
- *   here are always signed in, so no anonymous gate is rendered.
- * - TODO(embedded): point `api` at the host's chat endpoint (or allowlist
+ * - TODO(embedded): users are always signed in via the host Supabase
+ *   session, so no anonymous gate is rendered here.
+ * - TODO(embedded): point ChatView at the host's chat endpoint (or allowlist
  *   /api/sylla/ in the Syllabus Sync edge proxy if calling cross-app).
- * - TODO(phase 2): load/save conversations (sylla_conversations /
- *   sylla_messages) so the panel reopens with history.
- * - TODO(embedded): pass page context (current tasks, study planner items,
- *   upcoming deadlines, unit info) into the request for
- *   buildSyllaSystemPrompt(context).
- * - TODO(rag): surface the user's uploaded documents (sylla_documents) as
- *   retrieval context.
+ * - TODO(embedded): pass page context (tasks, study planner items, upcoming
+ *   deadlines, unit info) into the request for buildSyllaSystemPrompt().
+ * - TODO(rag): surface the user's uploaded documents as retrieval context.
  */
 export function SyllaFloatingButton() {
   const [open, setOpen] = useState(false);
@@ -30,8 +26,8 @@ export function SyllaFloatingButton() {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
       {open && (
-        <div className="flex h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))] flex-col">
-          <SyllaChatPanel className="shadow-xl" />
+        <div className="flex h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-black/10 bg-white shadow-xl dark:border-white/10 dark:bg-zinc-900">
+          <ChatView conversationId={null} />
         </div>
       )}
       <button

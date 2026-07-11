@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation';
+import { HomeScreen } from '@/components/home/HomeScreen';
 
-// Sylla is the whole product in this app; the chat lives at /sylla.
-export default function RootPage() {
-  redirect('/sylla');
+export default function HomePage() {
+  return <HomeScreen />;
 }

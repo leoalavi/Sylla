@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { AppShell } from "@/components/shell/AppShell";
+import { themeInitScript } from "@/components/shell/ThemeController";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,9 +15,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sylla — your study planning assistant",
+  title: {
+    default: "Sylla — your study planning assistant",
+    template: "%s · Sylla",
+  },
   description:
     "Break down study tasks, understand academic content, and turn your learning goals into clear next steps. An independent student-built assistant.",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0c" },
+  ],
 };
 
 export default function RootLayout({
@@ -27,8 +39,17 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        {/* Applies the stored theme before first paint (no flash).
+            Safe use of dangerouslySetInnerHTML: themeInitScript is a static
+            compile-time constant — no user or external input reaches it. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="min-h-full">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
