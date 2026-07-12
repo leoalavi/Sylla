@@ -25,7 +25,20 @@ export interface LocalStore<T> {
   clear: () => void;
 }
 
-export function createLocalStore<T>(name: string, initial: T): LocalStore<T> {
+export interface LocalStoreOptions<T> {
+  /**
+   * Maps whatever was persisted (possibly by an older app version) onto the
+   * current shape — e.g. merging new fields over defaults. Without this, a
+   * stale persisted object is returned as-is.
+   */
+  migrate?: (persisted: unknown) => T;
+}
+
+export function createLocalStore<T>(
+  name: string,
+  initial: T,
+  options: LocalStoreOptions<T> = {},
+): LocalStore<T> {
   const key = PREFIX + name;
   const listeners = new Set<() => void>();
   let cached: T = initial;
@@ -35,7 +48,8 @@ export function createLocalStore<T>(name: string, initial: T): LocalStore<T> {
     try {
       const raw = window.localStorage.getItem(key);
       if (raw === null) return initial;
-      return JSON.parse(raw) as T;
+      const parsed: unknown = JSON.parse(raw);
+      return options.migrate ? options.migrate(parsed) : (parsed as T);
     } catch {
       // Corrupt JSON or storage unavailable — fall back to the initial value.
       return initial;
@@ -82,8 +96,8 @@ export function createLocalStore<T>(name: string, initial: T): LocalStore<T> {
     };
   }
 
+  // `use` is itself a hook; consumers call store.use() at the top level.
   function use(): T {
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- `use` is itself a hook; consumers call store.use() at the top level.
     return useSyncExternalStore(subscribe, get, () => initial);
   }
 

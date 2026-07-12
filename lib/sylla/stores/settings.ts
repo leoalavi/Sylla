@@ -13,7 +13,16 @@ export const DEFAULT_SETTINGS: SyllaSettings = {
   mockScenario: 'normal',
 };
 
-export const settingsStore = createLocalStore<SyllaSettings>('settings', DEFAULT_SETTINGS);
+export const settingsStore = createLocalStore<SyllaSettings>('settings', DEFAULT_SETTINGS, {
+  // Merge over defaults so settings persisted by an older version (or with
+  // missing fields) never surface `undefined` values.
+  migrate: (persisted) => ({
+    ...DEFAULT_SETTINGS,
+    ...(typeof persisted === 'object' && persisted !== null
+      ? (persisted as Partial<SyllaSettings>)
+      : {}),
+  }),
+});
 
 export function useSettings(): SyllaSettings {
   return settingsStore.use();

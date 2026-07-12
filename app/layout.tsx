@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { AppShell } from "@/components/shell/AppShell";
 import { themeInitScript } from "@/components/shell/ThemeController";
@@ -43,9 +44,11 @@ export default function RootLayout({
     >
       <head>
         {/* Applies the stored theme before first paint (no flash).
-            Safe use of dangerouslySetInnerHTML: themeInitScript is a static
-            compile-time constant — no user or external input reaches it. */}
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+            themeInitScript is a static compile-time constant — no user or
+            external input reaches it. */}
+        <Script id="sylla-theme-init" strategy="beforeInteractive">
+          {themeInitScript}
+        </Script>
       </head>
       <body className="min-h-full">
         <AppShell>{children}</AppShell>

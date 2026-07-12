@@ -38,10 +38,11 @@ A Notion-AI-style assistant mounted inside the main Syllabus Sync app
 
 | Layer | Shared artifact | Notes |
 | --- | --- | --- |
-| Chat UI core | `components/sylla/SyllaChatPanel.tsx` | Mode-agnostic: messages, input, streaming, error/empty states. Knows nothing about auth or limits. |
-| Mode policy (standalone) | `components/sylla/SyllaChat.tsx` | Wraps the panel with the anonymous gate + sign-in CTA. |
+| Chat UI core | `components/chat/ChatView.tsx` | Mode-agnostic: messages, streaming, markdown, persistence, message actions. Knows nothing about auth or limits. |
+| Mode policy (standalone) | `components/chat/ChatScreen.tsx` | Wraps ChatView with history panel, anonymous gate + sign-in CTA. |
 | Mode policy (embedded) | `components/sylla/SyllaFloatingButton.tsx` | Preview of the embedded launcher; not mounted in the standalone app. |
-| AI logic | `app/api/sylla/chat/route.ts` + `lib/sylla/prompts.ts` | One endpoint, one system prompt, one UI-message stream protocol for both modes. `buildSyllaSystemPrompt(context)` is where embedded context attaches. |
+| AI logic (chat) | `app/api/sylla/chat/route.ts` + `lib/sylla/prompts.ts` | One endpoint, one system prompt, one UI-message stream protocol for both modes. `buildSyllaSystemPrompt(context)` is where embedded context attaches. |
+| AI logic (study tools) | `lib/sylla/ai/` (`StudyToolService`) | Typed interface + mock provider; the live provider replaces one file — see docs/api-integration.md. |
 | Auth & users | Shared Supabase project | Identical `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` values in both apps → one account works everywhere. |
 | Data (future) | `sylla_*` tables | See schema sketch below; RLS-scoped to the owning user, readable by both modes. |
 | Config & copy | `lib/sylla/config.ts` | Limits, example prompts, disclaimer, sign-in URL. |
@@ -108,7 +109,7 @@ the standalone site appears inside the embedded assistant.
 
 ## Future capabilities and where they attach
 
-- **Saved conversations / history** → `SyllaChatPanel` gains
+- **Saved conversations / history** → local history shipped; `ChatView` gains
   `initialMessages` + conversation-id props (TODO already in the component);
   the API route persists turns for signed-in users.
 - **File upload + RAG** → upload UI in both modes; documents land in Supabase
