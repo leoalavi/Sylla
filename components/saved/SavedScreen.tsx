@@ -51,9 +51,9 @@ function SavedItemDetail({ item }: { item: SavedItem }) {
       return (
         <ul className="space-y-2 text-sm">
           {item.plan.tasks.map((task) => (
-            <li key={task.id} className="rounded-xl border border-black/5 px-3 py-2 dark:border-white/10">
+            <li key={task.id} className="rounded-xl border border-border/60 px-3 py-2 ">
               {task.label}
-              <span className="mt-0.5 block text-[11px] text-black/45 dark:text-white/45">
+              <span className="mt-0.5 block text-[11px] text-faint">
                 {task.day} · ~{task.minutes} min
               </span>
             </li>
@@ -78,7 +78,7 @@ export function SavedScreen() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
       <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Saved</h1>
-      <p className="mt-1.5 text-sm text-black/55 dark:text-white/55 sm:text-base">
+      <p className="mt-1.5 text-sm text-muted-foreground sm:text-base">
         Messages, summaries, decks, quizzes, and plans you&apos;ve kept — stored on this device.
       </p>
 
@@ -104,10 +104,10 @@ export function SavedScreen() {
                 onClick={() => setFilter('all')}
                 aria-pressed={filter === 'all'}
                 className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
-                  filter === 'all'
-                    ? 'border-indigo-400 bg-indigo-500/[0.08] font-medium text-indigo-600 dark:text-indigo-400'
-                    : 'border-black/10 dark:border-white/15'
-                }`}
+ filter === 'all'
+ ? 'border-primary bg-primary/10 font-medium text-primary'
+ : 'border-border'
+ }`}
               >
                 All ({items.length})
               </button>
@@ -118,10 +118,10 @@ export function SavedScreen() {
                   onClick={() => setFilter(kind)}
                   aria-pressed={filter === kind}
                   className={`rounded-full border px-3 py-1.5 text-xs transition-colors ${
-                    filter === kind
-                      ? 'border-indigo-400 bg-indigo-500/[0.08] font-medium text-indigo-600 dark:text-indigo-400'
-                      : 'border-black/10 dark:border-white/15'
-                  }`}
+ filter === kind
+ ? 'border-primary bg-primary/10 font-medium text-primary'
+ : 'border-border'
+ }`}
                 >
                   {KIND_META[kind].label}
                 </button>
@@ -136,13 +136,13 @@ export function SavedScreen() {
                 <li key={item.id} className={`${card} flex items-center gap-3 px-4 py-3`}>
                   <span
                     aria-hidden
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-500/12 text-indigo-500"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
                   >
                     <Icon size={16} strokeWidth={1.9} />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{item.title}</p>
-                    <p className="text-[11px] text-black/45 dark:text-white/45">
+                    <p className="text-[11px] text-faint">
                       {kindLabel.replace(/s$/, '')} · {new Date(item.createdAt).toLocaleDateString()}
                     </p>
                   </div>

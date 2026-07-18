@@ -126,11 +126,11 @@ export function ChatView({
         {aiConfigured === false && (
           <p
             role="status"
-            className="mx-auto flex w-fit items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-700 dark:text-amber-400"
+            className="mx-auto flex w-fit items-center gap-2 rounded-xl border border-warning/40 bg-warning/10 px-3 py-1.5 text-xs text-warning"
           >
             <AlertTriangle size={13} aria-hidden />
-            Development preview — no AI provider is configured, so replies are canned mock
-            responses.
+            Mock AI mode — replies are canned preview responses until a live AI provider is
+            connected.
           </p>
         )}
 
@@ -157,7 +157,7 @@ export function ChatView({
         {status === 'submitted' && (
           <div
             role="status"
-            className="flex items-center gap-2 pl-10 text-sm text-black/50 dark:text-white/50"
+            className="flex items-center gap-2 pl-10 text-sm text-faint"
           >
             <span className="flex gap-1" aria-hidden>
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-current [animation-delay:-0.3s]" />
@@ -171,13 +171,13 @@ export function ChatView({
         {error && (
           <div
             role="alert"
-            className="mx-auto flex w-fit items-center gap-3 rounded-xl border border-red-500/25 bg-red-500/[0.06] px-4 py-2.5 text-sm text-red-600 dark:text-red-400"
+            className="mx-auto flex w-fit items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-sm text-destructive"
           >
             Something went wrong. Please try again.
             <button
               type="button"
               onClick={() => void regenerate()}
-              className="rounded-lg border border-red-500/30 px-2.5 py-1 text-xs font-medium transition-colors hover:bg-red-500/10"
+              className="rounded-lg border border-destructive/40 px-2.5 py-1 text-xs font-medium transition-colors hover:bg-destructive/10"
             >
               Retry
             </button>
@@ -185,7 +185,7 @@ export function ChatView({
         )}
       </div>
 
-      <div className="border-t border-black/5 px-3 pt-3 pb-2 dark:border-white/10 sm:px-4">
+      <div className="border-t border-border/60 px-3 pt-3 pb-2 sm:px-4">
         {gated ? (
           gateNotice
         ) : (

@@ -43,7 +43,7 @@ export async function POST(req: Request) {
   }
 
   // TODO: connect the model — set GOOGLE_GENERATIVE_AI_API_KEY in .env.local
-  // (see .env.example). Until then we stream a mocked response so the UI is
+  // (see .env). Until then we stream a mocked response so the UI is
   // fully exercisable in development.
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     return createMockStreamResponse();

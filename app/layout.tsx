@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Work_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { AppShell } from "@/components/shell/AppShell";
 import { themeInitScript } from "@/components/shell/ThemeController";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Work Sans matches Syllabus Sync's primary typeface.
+const workSans = Work_Sans({
+  variable: "--font-work-sans",
   subsets: ["latin"],
 });
 
@@ -17,17 +18,17 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sylla — your study planning assistant",
+    default: "Sylla — the AI study assistant for Syllabus Sync",
     template: "%s · Sylla",
   },
   description:
-    "Break down study tasks, understand academic content, and turn your learning goals into clear next steps. An independent student-built assistant.",
+    "Sylla helps turn your units, notes, and study goals into summaries, flashcards, quizzes, and study plans. Part of the Syllabus Sync ecosystem.",
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0c" },
+    { media: "(prefers-color-scheme: light)", color: "#edeade" },
+    { media: "(prefers-color-scheme: dark)", color: "#262826" },
   ],
 };
 
@@ -39,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${workSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

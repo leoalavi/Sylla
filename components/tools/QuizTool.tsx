@@ -71,7 +71,7 @@ export function QuizTool() {
               className={input}
             />
             {showValidation && invalid && (
-              <p id="quiz-topic-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+              <p id="quiz-topic-error" className="mt-1 text-xs text-destructive">
                 Enter a topic to be quizzed on (at least 3 characters).
               </p>
             )}
@@ -79,7 +79,7 @@ export function QuizTool() {
           <div>
             <label htmlFor="quiz-material" className={label}>
               Source material{' '}
-              <span className="font-normal text-black/40 dark:text-white/40">(optional)</span>
+              <span className="font-normal text-faint">(optional)</span>
             </label>
             <textarea
               id="quiz-material"
@@ -113,7 +113,7 @@ export function QuizTool() {
                 type="checkbox"
                 checked={includeShortAnswer}
                 onChange={(event) => setIncludeShortAnswer(event.target.checked)}
-                className="accent-indigo-600"
+                className="accent-primary"
               />
               Include short-answer practice questions
             </label>

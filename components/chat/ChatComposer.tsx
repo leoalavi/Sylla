@@ -56,7 +56,7 @@ export function ChatComposer({ draftKey, onSend, onStop, streaming, disabled, hi
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="flex items-end gap-2 rounded-2xl border border-black/10 bg-white p-2 shadow-sm focus-within:border-indigo-400 dark:border-white/15 dark:bg-white/[0.04]">
+      <div className="flex items-end gap-2 rounded-xl border border-border bg-input-bg p-2 shadow-mq-sm focus-within:border-primary ">
         <label htmlFor={`composer-${draftKey}`} className="sr-only">
           Message Sylla
         </label>
@@ -69,14 +69,14 @@ export function ChatComposer({ draftKey, onSend, onStop, streaming, disabled, hi
           placeholder="Ask Sylla about your study plan…"
           onChange={(event) => setDraft(draftKey, event.target.value)}
           onKeyDown={handleKeyDown}
-          className="max-h-[160px] min-h-[40px] flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-black/40 disabled:cursor-not-allowed disabled:opacity-50 dark:placeholder:text-white/40"
+          className="max-h-[160px] min-h-[40px] flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-faint disabled:cursor-not-allowed disabled:opacity-50"
         />
         {streaming && onStop ? (
           <button
             type="button"
             onClick={onStop}
             aria-label="Stop generating"
-            className="inline-flex items-center gap-2 rounded-xl border border-black/15 px-4 py-2 text-sm font-medium transition-colors hover:border-red-400 hover:text-red-600 dark:border-white/20 dark:hover:text-red-400"
+            className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-destructive hover:text-destructive"
           >
             <Square size={14} aria-hidden /> Stop
           </button>
@@ -85,13 +85,13 @@ export function ChatComposer({ draftKey, onSend, onStop, streaming, disabled, hi
             type="submit"
             disabled={disabled || streaming || value.trim().length === 0}
             aria-label="Send message"
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
           >
             <SendHorizonal size={14} aria-hidden /> Send
           </button>
         )}
       </div>
-      <p className="mt-2 min-h-4 text-center text-xs text-black/45 dark:text-white/45" aria-live="polite">
+      <p className="mt-2 min-h-4 text-center text-xs text-faint" aria-live="polite">
         {hint ??
           (sendOnEnter ? 'Enter to send · Shift+Enter for a new line' : 'Cmd/Ctrl+Enter to send')}
       </p>

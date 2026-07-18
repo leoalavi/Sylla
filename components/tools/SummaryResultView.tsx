@@ -25,7 +25,7 @@ export function SummaryResultView({ summary }: { summary: Summary }) {
     <article className={`${card} space-y-5 p-5`} aria-label={`Summary of ${summary.sourceTitle}`}>
       <div>
         <h2 className="text-base font-semibold">{summary.sourceTitle}</h2>
-        <p className="mt-1.5 text-sm leading-relaxed text-black/70 dark:text-white/70">
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
           {summary.overview}
         </p>
       </div>
@@ -45,8 +45,8 @@ export function SummaryResultView({ summary }: { summary: Summary }) {
           <dl className="mt-2 space-y-2 text-sm">
             {summary.terms.map((t) => (
               <div key={t.term}>
-                <dt className="font-medium text-indigo-600 dark:text-indigo-400">{t.term}</dt>
-                <dd className="text-black/60 dark:text-white/60">{t.definition}</dd>
+                <dt className="font-medium text-primary">{t.term}</dt>
+                <dd className="text-muted-foreground">{t.definition}</dd>
               </div>
             ))}
           </dl>
@@ -62,7 +62,7 @@ export function SummaryResultView({ summary }: { summary: Summary }) {
                 key={followUp}
                 type="button"
                 onClick={() => startChat(followUp)}
-                className="rounded-full border border-black/10 px-3 py-1.5 text-xs transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-white/15 dark:hover:text-indigo-400"
+                className="rounded-full border border-border px-3 py-1.5 text-xs transition-colors hover:border-primary/60 hover:text-primary "
               >
                 {followUp}
               </button>

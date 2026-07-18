@@ -5,32 +5,101 @@
    <html>, based on Settings → Appearance. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+   Sylla design tokens — mirrored from the Syllabus Sync design
+   system (Macquarie palette: alabaster / sand / charcoal, MQ red
+   primary). Values match Syllabus-Sync/app/mq-tokens.css so the
+   two apps read as one product.
+   ============================================================ */
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
+  /* Surfaces */
+  --background: #edeade;            /* alabaster */
+  --card: #f5f4ed;                  /* alabaster-light */
+  --muted: #eae8e1;                 /* sand-200 */
+  --hover: #f7f6f3;                 /* sand-100 */
+  --input-bg: #ffffff;
+
+  /* Content */
+  --foreground: #1a1a1a;
+  --muted-foreground: #4a4a44;      /* content-tertiary (WCAG AA on alabaster) */
+  --faint: #71736b;                 /* charcoal-600 */
+
+  /* Lines & focus */
+  --border: #d6d2c4;                /* sand-300 */
+  --ring: #a6192e;
+
+  /* Brand */
+  --primary: #a6192e;               /* MQ red */
+  --primary-hover: #8f1527;
+  --primary-foreground: #ffffff;
+
+  /* States */
+  --success: #10b981;
+  --warning: #b45309;               /* amber-700 for AA on light surfaces */
+  --destructive: #dc2626;
+
+  --shadow-mq-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-mq: 0 1px 3px 0 rgb(0 0 0 / 0.1);
 }
 
 :root.dark {
-  --background: #0a0a0c;
-  --foreground: #ededf0;
+  --background: #262826;            /* charcoal-900 */
+  --card: #373a36;                  /* charcoal-800 */
+  --muted: #43463f;
+  --hover: #535650;                 /* charcoal-700 */
+  --input-bg: #151515;
+
+  --foreground: #edeade;            /* alabaster text on charcoal */
+  --muted-foreground: #c4c6c0;      /* charcoal-200 */
+  --faint: #a0a29c;                 /* charcoal-300 */
+
+  --border: #535650;                /* charcoal-700 */
+  --ring: #d6001c;                  /* bright red reads better on charcoal */
+
+  --primary: #c22032;               /* slightly lifted MQ red for dark surfaces */
+  --primary-hover: #d6001c;
+  --primary-foreground: #ffffff;
+
+  --success: #34d399;
+  --warning: #fbbf24;
+  --destructive: #f87171;
+
+  --shadow-mq-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-mq: 0 1px 3px 0 rgb(0 0 0 / 0.4);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-hover: var(--hover);
+  --color-input-bg: var(--input-bg);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-faint: var(--faint);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-destructive: var(--destructive);
+  --font-sans: var(--font-work-sans);
   --font-mono: var(--font-geist-mono);
+  --shadow-mq-sm: var(--shadow-mq-sm);
+  --shadow-mq: var(--shadow-mq);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-work-sans), 'Work Sans', system-ui, sans-serif;
 }
 
-/* Visible, consistent focus for keyboard users. */
+/* Visible, consistent focus for keyboard users (MQ red, as in Syllabus Sync). */
 :focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: 4px;
 }

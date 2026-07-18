@@ -43,11 +43,11 @@ export function ConfirmDialog({
         // Click on the backdrop (the dialog element itself) dismisses.
         if (event.target === ref.current) onClose();
       }}
-      className="m-auto w-[min(420px,calc(100vw-2rem))] rounded-2xl border border-black/10 bg-white p-0 text-inherit shadow-xl backdrop:bg-black/50 dark:border-white/10 dark:bg-zinc-900"
+      className="m-auto w-[min(420px,calc(100vw-2rem))] rounded-xl border border-border bg-card p-0 text-inherit shadow-xl backdrop:bg-black/50"
     >
       <div className="p-5">
         <h2 className="text-base font-semibold">{title}</h2>
-        <p className="mt-2 text-sm text-black/60 dark:text-white/60">{description}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{description}</p>
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={onClose} className={btnSecondary}>
             Cancel

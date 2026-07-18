@@ -71,13 +71,19 @@ with `Domain=.syllabus-sync.app` (cookie options on the SSR clients in *both*
 apps), making a Syllabus Sync login immediately visible to Sylla and vice
 versa. Near-zero code; this is the preferred deployment.
 
-TODOs when implementing Option A:
+Code-side support is DONE in Sylla: all Supabase clients (browser, server,
+and the session-refresh `proxy.ts`) honour `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN`
+(see `lib/supabase/cookie-options.ts`). Remaining work is deployment
+configuration:
 
-- [ ] Deploy standalone Sylla at `sylla.syllabus-sync.app`.
-- [ ] Set the shared cookie domain in both apps' Supabase client/server
-      configs (`cookieOptions: { domain: '.syllabus-sync.app' }`).
-- [ ] Update `NEXT_PUBLIC_SYLLABUS_SYNC_URL` and verify the post-login
-      redirect returns the user to Sylla.
+- [ ] Deploy standalone Sylla at `sylla.syllabus-sync.app` (Vercel domain).
+- [ ] Set `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN=.syllabus-sync.app` in BOTH apps
+      (Syllabus Sync must pass the same `cookieOptions.domain` to its
+      Supabase clients).
+- [ ] Add `https://sylla.syllabus-sync.app` (and its `/auth/callback` if one
+      is added) to Supabase Auth → allowed redirect URLs.
+- [ ] Set `NEXT_PUBLIC_SYLLABUS_SYNC_URL` / `NEXT_PUBLIC_SYLLA_URL` in both
+      deployments and verify the post-login redirect returns to Sylla.
 - [ ] Confirm Syllabus Sync's CSRF origin checks accept the subdomain.
 
 ### Option B — separate, unrelated domains
@@ -89,10 +95,11 @@ allowlisted). Strictly more moving parts and more security surface (token in
 transit, open-redirect hardening, allowlist management). **Not recommended**
 unless branding demands an unrelated domain.
 
-Phase 1 status: neither is implemented. The sign-in CTA simply links to the
-Syllabus Sync login; a user returning to Sylla is only "seen" if the session
-is visible on Sylla's origin (true in same-origin local dev, and true in
-production once Option A ships).
+Current status: Sylla's code side is ready (cookie-domain option, session
+refresh proxy, validated sign-in URL). The sign-in CTA links to the Syllabus
+Sync login; a user returning to Sylla is "seen" once the session is visible
+on Sylla's origin (true in same-origin local dev, and true in production
+once the Option A deployment checklist above is completed).
 
 ## Future database schema (not created yet)
 

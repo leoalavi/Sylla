@@ -55,7 +55,7 @@ export function ChatMessageItem({ message, onRegenerate, onEditResend, busy }: C
   if (editing) {
     return (
       <div className="flex w-full justify-end">
-        <div className="w-full max-w-[85%] rounded-2xl border border-indigo-400/50 bg-white p-3 dark:bg-white/[0.04] sm:max-w-[75%]">
+        <div className="w-full max-w-[85%] rounded-2xl border border-primary/50 bg-card p-3 sm:max-w-[75%]">
           <label htmlFor={`edit-${message.id}`} className="sr-only">
             Edit message
           </label>
@@ -94,7 +94,7 @@ export function ChatMessageItem({ message, onRegenerate, onEditResend, busy }: C
           {!isUser && (
             <span
               aria-hidden
-              className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-semibold text-indigo-500"
+              className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-xs font-semibold text-primary"
             >
               S
             </span>
@@ -102,8 +102,8 @@ export function ChatMessageItem({ message, onRegenerate, onEditResend, busy }: C
           <div
             className={
               isUser
-                ? 'rounded-2xl rounded-br-md bg-indigo-600 px-4 py-2.5 text-sm leading-relaxed text-white shadow-sm'
-                : 'min-w-0 rounded-2xl rounded-bl-md border border-black/5 bg-black/[0.03] px-4 py-2.5 dark:border-white/10 dark:bg-white/[0.06]'
+                ? 'rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-sm leading-relaxed text-white shadow-mq-sm'
+                : 'min-w-0 rounded-2xl rounded-bl-md border border-border/60 bg-muted px-4 py-2.5'
             }
           >
             {isUser ? (
@@ -117,8 +117,8 @@ export function ChatMessageItem({ message, onRegenerate, onEditResend, busy }: C
         {!busy && (
           <div
             className={`mt-1 flex items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100 ${
-              isUser ? '' : 'pl-9'
-            }`}
+ isUser ? '' : 'pl-9'
+ }`}
           >
             <button type="button" onClick={copyMessage} className={btnGhost} aria-label="Copy message">
               {copied ? <Check size={13} aria-hidden /> : <Copy size={13} aria-hidden />}

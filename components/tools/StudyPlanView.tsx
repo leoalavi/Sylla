@@ -20,7 +20,7 @@ export function StudyPlanView({ plan, onDeleted }: { plan: StudyPlan; onDeleted?
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold">{plan.goal}</h2>
-          <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
+          <p className="mt-0.5 text-xs text-faint">
             Due {new Date(`${plan.deadline}T12:00:00`).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })}
             {' · '}
             {plan.hoursPerWeek}h/week · {done}/{plan.tasks.length} sessions done
@@ -37,17 +37,17 @@ export function StudyPlanView({ plan, onDeleted }: { plan: StudyPlan; onDeleted?
       </div>
 
       {plan.notes && (
-        <p className="mt-3 rounded-xl bg-black/[0.03] px-3 py-2 text-xs text-black/60 dark:bg-white/[0.05] dark:text-white/60">
+        <p className="mt-3 rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground">
           {plan.notes}
         </p>
       )}
 
       <div
         aria-hidden
-        className="mt-4 h-1.5 overflow-hidden rounded-full bg-black/[0.06] dark:bg-white/[0.08]"
+        className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted"
       >
         <div
-          className="h-full rounded-full bg-indigo-500 transition-all"
+          className="h-full rounded-full bg-primary transition-all"
           style={{ width: `${plan.tasks.length === 0 ? 0 : (done / plan.tasks.length) * 100}%` }}
         />
       </div>
@@ -56,19 +56,19 @@ export function StudyPlanView({ plan, onDeleted }: { plan: StudyPlan; onDeleted?
         {plan.tasks.map((task) => (
           <li key={task.id}>
             <label
-              className={`flex cursor-pointer items-start gap-3 rounded-xl border border-black/5 px-3 py-2.5 text-sm transition-colors hover:border-indigo-300 dark:border-white/10 ${
-                task.done ? 'opacity-55' : ''
-              }`}
+              className={`flex cursor-pointer items-start gap-3 rounded-xl border border-border/60 px-3 py-2.5 text-sm transition-colors hover:border-primary/50 ${
+ task.done ? 'opacity-55' : ''
+ }`}
             >
               <input
                 type="checkbox"
                 checked={task.done}
                 onChange={() => toggleStudyTask(plan.id, task.id)}
-                className="mt-0.5 accent-indigo-600"
+                className="mt-0.5 accent-primary"
               />
               <span className="flex-1">
                 <span className={task.done ? 'line-through' : ''}>{task.label}</span>
-                <span className="mt-0.5 block text-[11px] text-black/45 dark:text-white/45">
+                <span className="mt-0.5 block text-[11px] text-faint">
                   {task.day} · ~{task.minutes} min
                 </span>
               </span>

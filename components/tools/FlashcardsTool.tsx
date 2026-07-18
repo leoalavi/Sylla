@@ -77,7 +77,7 @@ export function FlashcardsTool() {
               className={input}
             />
             {showValidation && invalid && (
-              <p id="flashcards-topic-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+              <p id="flashcards-topic-error" className="mt-1 text-xs text-destructive">
                 Enter a topic for the deck (at least 3 characters).
               </p>
             )}
@@ -85,7 +85,7 @@ export function FlashcardsTool() {
           <div>
             <label htmlFor="flashcards-material" className={label}>
               Source material{' '}
-              <span className="font-normal text-black/40 dark:text-white/40">(optional)</span>
+              <span className="font-normal text-faint">(optional)</span>
             </label>
             <textarea
               id="flashcards-material"

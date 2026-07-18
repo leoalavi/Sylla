@@ -17,7 +17,7 @@ export function PromptChips({
           type="button"
           disabled={disabled}
           onClick={() => onSelect(prompt)}
-          className="rounded-full border border-black/10 bg-white px-3.5 py-1.5 text-xs text-black/70 transition-colors hover:border-indigo-400 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/15 dark:bg-white/[0.04] dark:text-white/70 dark:hover:text-indigo-400 sm:text-sm"
+          className="rounded-full border border-border bg-card px-3.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm"
         >
           {prompt}
         </button>

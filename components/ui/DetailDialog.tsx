@@ -28,16 +28,16 @@ export function DetailDialog({ open, title, onClose, children }: DetailDialogPro
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
-      className="m-auto w-[min(640px,calc(100vw-2rem))] rounded-2xl border border-black/10 bg-white p-0 text-inherit shadow-xl backdrop:bg-black/50 dark:border-white/10 dark:bg-zinc-900"
+      className="m-auto w-[min(640px,calc(100vw-2rem))] rounded-xl border border-border bg-card p-0 text-inherit shadow-xl backdrop:bg-black/50"
     >
       <div className="flex max-h-[80dvh] flex-col">
-        <div className="flex items-center justify-between gap-3 border-b border-black/5 px-5 py-3 dark:border-white/10">
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 py-3 ">
           <h2 className="truncate text-sm font-semibold">{title}</h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="rounded-lg p-1.5 text-black/50 hover:bg-black/[0.06] dark:text-white/50 dark:hover:bg-white/[0.08]"
+            className="rounded-lg p-1.5 text-faint hover:bg-hover"
           >
             <X size={16} aria-hidden />
           </button>

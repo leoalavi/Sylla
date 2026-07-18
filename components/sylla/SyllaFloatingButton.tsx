@@ -26,7 +26,7 @@ export function SyllaFloatingButton() {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
       {open && (
-        <div className="flex h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-black/10 bg-white shadow-xl dark:border-white/10 dark:bg-zinc-900">
+        <div className="flex h-[min(560px,calc(100dvh-7rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
           <ChatView conversationId={null} />
         </div>
       )}
@@ -35,7 +35,7 @@ export function SyllaFloatingButton() {
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
         aria-label={open ? 'Close Sylla assistant' : 'Open Sylla assistant'}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white shadow-lg transition-colors hover:bg-indigo-500"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-white shadow-lg transition-colors hover:bg-primary-hover"
       >
         {open ? '×' : 'S'}
       </button>

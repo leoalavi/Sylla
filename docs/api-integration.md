@@ -39,8 +39,7 @@ Recommended shape for the live implementation:
    }
    ```
 
-Setting `providerName: 'live'` automatically removes every "Mock results
-(dev)" badge. The Settings → Developer scenario switch only affects the mock
+Setting `providerName: 'live'` automatically removes every "Mock AI mode" badge. The Settings → Developer scenario switch only affects the mock
 provider; delete `mock-provider.ts` (and its tests) when you no longer need it.
 
 ## 2. Chat — the existing streaming route
@@ -50,8 +49,8 @@ provider; delete `mock-provider.ts` (and its tests) when you no longer need it.
 Chat is already wired through the Vercel AI SDK: set
 `GOOGLE_GENERATIVE_AI_API_KEY` and the route streams Gemini responses using
 the system prompt from `lib/sylla/prompts.ts`; without the key it streams a
-clearly-labelled mock reply. The client banner ("Development preview…") is
-driven by `/api/sylla/status` and disappears automatically once the key is
+clearly-labelled mock reply. The client banner ("Mock AI mode…") and the Settings → AI status badge are
+driven by `/api/sylla/status` and switch automatically once the key is
 present.
 
 To use a different provider, swap the `google('gemini-2.5-flash')` model in

@@ -21,7 +21,7 @@ export function Markdown({ children }: { children: string }) {
           ol: (props) => <ol className="list-decimal space-y-1 pl-5" {...props} />,
           a: (props) => (
             <a
-              className="text-indigo-600 underline underline-offset-2 dark:text-indigo-400"
+              className="text-primary underline underline-offset-2"
               target="_blank"
               rel="noreferrer"
               {...props}
@@ -29,7 +29,7 @@ export function Markdown({ children }: { children: string }) {
           ),
           blockquote: (props) => (
             <blockquote
-              className="border-l-2 border-indigo-400/50 pl-3 text-black/60 dark:text-white/60"
+              className="border-l-2 border-primary/50 pl-3 text-muted-foreground"
               {...props}
             />
           ),
@@ -45,7 +45,7 @@ export function Markdown({ children }: { children: string }) {
             }
             return (
               <code
-                className="rounded bg-black/[0.06] px-1 py-0.5 font-mono text-[0.85em] dark:bg-white/[0.1]"
+                className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]"
                 {...props}
               >
                 {children}
@@ -54,7 +54,7 @@ export function Markdown({ children }: { children: string }) {
           },
           pre: (props) => (
             <pre
-              className="overflow-x-auto rounded-xl border border-black/10 bg-black/[0.04] p-3 dark:border-white/10 dark:bg-black/40"
+              className="overflow-x-auto rounded-xl border border-border bg-muted p-3"
               {...props}
             />
           ),
@@ -65,14 +65,14 @@ export function Markdown({ children }: { children: string }) {
           ),
           th: (props) => (
             <th
-              className="border-b border-black/15 px-2 py-1.5 text-left font-semibold dark:border-white/20"
+              className="border-b border-border px-2 py-1.5 text-left font-semibold"
               {...props}
             />
           ),
           td: (props) => (
-            <td className="border-b border-black/5 px-2 py-1.5 align-top dark:border-white/10" {...props} />
+            <td className="border-b border-border/60 px-2 py-1.5 align-top" {...props} />
           ),
-          hr: () => <hr className="border-black/10 dark:border-white/10" />,
+          hr: () => <hr className="border-border" />,
         }}
       >
         {children}

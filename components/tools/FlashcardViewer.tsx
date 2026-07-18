@@ -45,7 +45,7 @@ export function FlashcardViewer({ set }: { set: FlashcardSet }) {
   return (
     <section aria-label={`Flashcards: ${set.topic}`} onKeyDown={handleKeyDown}>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-medium text-black/55 dark:text-white/55" aria-live="polite">
+        <p className="text-xs font-medium text-muted-foreground" aria-live="polite">
           Card {position + 1} of {total}
         </p>
         <div className="flex gap-1">
@@ -76,10 +76,10 @@ export function FlashcardViewer({ set }: { set: FlashcardSet }) {
 
       <div
         aria-hidden
-        className="mt-2 h-1 overflow-hidden rounded-full bg-black/[0.06] dark:bg-white/[0.08]"
+        className="mt-2 h-1 overflow-hidden rounded-full bg-muted"
       >
         <div
-          className="h-full rounded-full bg-indigo-500 transition-all"
+          className="h-full rounded-full bg-primary transition-all"
           style={{ width: `${((position + 1) / total) * 100}%` }}
         />
       </div>
@@ -89,10 +89,10 @@ export function FlashcardViewer({ set }: { set: FlashcardSet }) {
         onClick={() => setFlipped((f) => !f)}
         aria-pressed={flipped}
         aria-label={flipped ? 'Showing answer — press to show question' : 'Showing question — press to reveal answer'}
-        className="mt-3 flex min-h-44 w-full items-center justify-center rounded-2xl border border-black/10 bg-white p-6 text-center shadow-sm transition-colors hover:border-indigo-400 dark:border-white/12 dark:bg-white/[0.04]"
+        className="mt-3 flex min-h-44 w-full items-center justify-center rounded-2xl border border-border bg-card p-6 text-center shadow-mq-sm transition-colors hover:border-primary/60 "
       >
         <span>
-          <span className="block text-[11px] font-medium uppercase tracking-wide text-black/40 dark:text-white/40">
+          <span className="block text-[11px] font-medium uppercase tracking-wide text-faint">
             {flipped ? 'Answer' : 'Question'} · tap to flip
           </span>
           <span className="mt-2 block text-sm leading-relaxed sm:text-base">

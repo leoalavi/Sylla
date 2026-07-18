@@ -49,22 +49,22 @@ export function ToolPage({
     <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
       <Link
         href="/tools"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-black/50 hover:text-indigo-600 dark:text-white/50 dark:hover:text-indigo-400"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-faint hover:text-primary "
       >
         <ArrowLeft size={13} aria-hidden /> All study tools
       </Link>
       <header className="mt-3">
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
-          {isMock && <span className={badgeMock}>Mock results (dev)</span>}
+          {isMock && <span className={badgeMock}>Mock AI mode</span>}
           {activeUnit && (
-            <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[11px] font-medium text-indigo-600 dark:text-indigo-400">
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
               {activeUnit.code}
             </span>
           )}
         </div>
-        <p className="mt-1.5 text-sm text-black/55 dark:text-white/55">{description}</p>
-        <p className="mt-1 text-xs text-black/40 dark:text-white/40">Example: {example}</p>
+        <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
+        <p className="mt-1 text-xs text-faint">Example: {example}</p>
       </header>
 
       <div className="mt-6">
@@ -73,7 +73,7 @@ export function ToolPage({
             {resultIsEmpty ? (
               <div className={`${card} px-5 py-6 text-center`}>
                 <p className="text-sm font-medium">Nothing came back</p>
-                <p className="mx-auto mt-1 max-w-sm text-sm text-black/50 dark:text-white/50">
+                <p className="mx-auto mt-1 max-w-sm text-sm text-faint">
                   The service returned an empty result. Try adding more detail to your input, then
                   generate again.
                 </p>
@@ -95,20 +95,20 @@ export function ToolPage({
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-5/6" />
                 <Skeleton className="h-4 w-1/2" />
-                <p className="pt-1 text-xs text-black/45 dark:text-white/45">Generating…</p>
+                <p className="pt-1 text-xs text-faint">Generating…</p>
               </div>
             )}
 
             {status === 'error' && (
               <div
                 role="alert"
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-red-500/25 bg-red-500/[0.06] px-4 py-3 text-sm text-red-600 dark:text-red-400"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
               >
                 {errorMessage}
                 <button
                   type="button"
                   onClick={onRetry}
-                  className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-red-500/10"
+                  className="rounded-lg border border-destructive/40 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-destructive/10"
                 >
                   Retry
                 </button>

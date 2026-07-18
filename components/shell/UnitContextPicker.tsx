@@ -18,7 +18,7 @@ export function UnitContextPicker({ compact = false }: { compact?: boolean }) {
     <div>
       <label
         htmlFor={selectId}
-        className={compact ? 'sr-only' : 'mb-1.5 block text-xs font-medium text-black/55 dark:text-white/55'}
+        className={compact ? 'sr-only' : 'mb-1.5 block text-xs font-medium text-muted-foreground'}
       >
         Study context
       </label>
@@ -26,7 +26,7 @@ export function UnitContextPicker({ compact = false }: { compact?: boolean }) {
         id={selectId}
         value={activeId ?? ''}
         onChange={(event) => setActiveUnit(event.target.value || null)}
-        className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none transition-colors focus:border-indigo-400 dark:border-white/15 dark:bg-zinc-900"
+        className="w-full rounded-xl border border-border bg-input-bg px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
       >
         <option value="">General — no unit context</option>
         <optgroup label="Sample units (development data)">

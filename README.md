@@ -2,9 +2,9 @@
 
 # Sylla
 
-**An AI-powered study assistant for university students.**
+**Sylla — the AI study assistant for Syllabus Sync.**
 
-Sylla turns confusing course material into clear summaries, explanations, flashcards, quizzes, and study plans — built as a companion app inside the [Syllabus Sync](https://www.syllabus-sync.app) ecosystem.
+Sylla helps turn your units, notes, and study goals into summaries, flashcards, quizzes, and study plans — one account, one design language, one ecosystem with [Syllabus Sync](https://www.syllabus-sync.app).
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=000)](https://react.dev)
@@ -26,7 +26,7 @@ Sylla turns confusing course material into clear summaries, explanations, flashc
 
 University course material is scattered and dense — lecture slides, readings, assignment briefs — and turning it into something you can actually study from takes time. Sylla is a focused AI study assistant that does that translation work: chat about your material, get it summarised, have a concept explained at the right depth, generate flashcards and practice quizzes, or turn a goal and a deadline into a scheduled plan.
 
-It's built as a **standalone companion app** to Syllabus Sync, sharing the same Supabase project and user accounts, with a **future phase** planned to embed the same chat core directly inside the main Syllabus Sync platform as an assistant panel (see [Architecture](#architecture)).
+It's the AI module of the Syllabus Sync ecosystem: it shares the same Supabase project and user accounts, mirrors the Syllabus Sync (Macquarie-palette) design system, and its sign-in flow IS Syllabus Sync's login. A future phase embeds the same chat core directly inside the main platform as an assistant panel (see [Architecture](#architecture)).
 
 **Who it's for:** university students who want a lightweight study companion without switching between five different tools — and, as a portfolio piece, an example of building a typed, testable product foundation with a clean seam for swapping in a real AI backend later.
 
@@ -100,6 +100,8 @@ Every variable is optional — Sylla runs fully in demo/mock mode with none of t
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Optional | Public (browser-safe) | Same as above. |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Optional | **Server-only — never expose with `NEXT_PUBLIC_`** | Chat streams a labelled mock reply instead of a real Gemini response. |
 | `NEXT_PUBLIC_SYLLABUS_SYNC_URL` | Optional | Public (browser-safe) | Sign-in CTA falls back to the production Syllabus Sync URL. |
+| `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` | Production only | Public (browser-safe) | Host-only auth cookies — sessions aren't shared across the `syllabus-sync.app` subdomains. |
+| `NEXT_PUBLIC_SYLLA_URL` | Optional | Public (browser-safe) | Only used for redirect/deployment documentation. |
 
 Copy `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` from your Syllabus Sync `.env.local` — the variable names are intentionally identical so the two apps can share one Supabase project.
 

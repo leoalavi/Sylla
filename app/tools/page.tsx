@@ -49,7 +49,7 @@ export default function ToolsPage() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
       <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Study tools</h1>
-      <p className="mt-1.5 text-sm text-black/55 dark:text-white/55 sm:text-base">
+      <p className="mt-1.5 text-sm text-muted-foreground sm:text-base">
         Focused modes for the study jobs chat is clumsy at.
       </p>
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -57,17 +57,17 @@ export default function ToolsPage() {
           <Link
             key={href}
             href={href}
-            className="flex items-start gap-3.5 rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition-colors hover:border-indigo-400 dark:border-white/10 dark:bg-white/[0.03]"
+            className="flex items-start gap-3.5 rounded-xl border border-border bg-card p-5 shadow-mq-sm transition-colors hover:border-primary/60 "
           >
             <span
               aria-hidden
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-500/12 text-indigo-500"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
             >
               <Icon size={18} strokeWidth={1.9} />
             </span>
             <span>
               <span className="block text-sm font-semibold">{title}</span>
-              <span className="mt-1 block text-xs leading-relaxed text-black/50 dark:text-white/50">
+              <span className="mt-1 block text-xs leading-relaxed text-faint">
                 {description}
               </span>
             </span>

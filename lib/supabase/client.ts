@@ -2,6 +2,7 @@
 
 import { createBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { getAuthCookieOptions } from '@/lib/supabase/cookie-options';
 
 // Sylla shares the Syllabus Sync Supabase project: identical env var names so
 // one set of credentials can be copied between the two apps.
@@ -26,7 +27,9 @@ let client: SupabaseClient | null = null;
 export function getSupabaseBrowserClient(): SupabaseClient | null {
   if (!isSupabaseConfigured()) return null;
   if (!client) {
-    client = createBrowserClient(supabaseUrl, supabaseAnonKey);
+    client = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+      cookieOptions: getAuthCookieOptions(),
+    });
   }
   return client;
 }

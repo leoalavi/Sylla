@@ -2,7 +2,7 @@
 
 import { useId, useState, type ReactNode } from 'react';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { btnDanger, card, hint, input } from '@/components/ui/classes';
+import { badgeLive, badgeMock, btnDanger, card, hint, input } from '@/components/ui/classes';
 import { useSupabaseSession } from '@/lib/supabase/use-session';
 import { getSignInUrl, SYLLA_DISCLAIMER } from '@/lib/sylla/config';
 import {
@@ -46,14 +46,14 @@ function Toggle({ checked, onChange, labelledBy }: { checked: boolean; onChange:
       aria-labelledby={labelledBy}
       onClick={() => onChange(!checked)}
       className={`relative h-6 w-11 rounded-full transition-colors ${
-        checked ? 'bg-indigo-600' : 'bg-black/20 dark:bg-white/20'
-      }`}
+ checked ? 'bg-primary' : 'bg-border'
+ }`}
     >
       <span
         aria-hidden
         className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${
-          checked ? 'left-[22px]' : 'left-0.5'
-        }`}
+ checked ? 'left-[22px]' : 'left-0.5'
+ }`}
       />
     </button>
   );
@@ -80,10 +80,10 @@ export function SettingsScreen() {
               <label
                 key={option}
                 className={`cursor-pointer rounded-xl border px-3 py-1.5 text-sm capitalize transition-colors ${
-                  settings.theme === option
-                    ? 'border-indigo-400 bg-indigo-500/[0.08] font-medium text-indigo-600 dark:text-indigo-400'
-                    : 'border-black/10 dark:border-white/15'
-                }`}
+ settings.theme === option
+ ? 'border-primary bg-primary/10 font-medium text-primary'
+ : 'border-border'
+ }`}
               >
                 <input
                   type="radio"
@@ -173,24 +173,55 @@ export function SettingsScreen() {
         </Row>
       </Section>
 
-      <Section title="Account" description="Sylla shares its accounts with Syllabus Sync.">
+      <Section title="Account" description="Sylla uses your Syllabus Sync account — one login for the whole ecosystem.">
         {session.isSignedIn ? (
-          <p className="text-sm">
-            Signed in as <span className="font-medium">{session.email}</span>
-          </p>
+          <div className="space-y-1.5 text-sm">
+            <p>
+              <span className="font-medium text-success">Connected to Syllabus Sync</span> as{' '}
+              <span className="font-medium">{session.email}</span>
+            </p>
+            <p className={hint}>
+              <a
+                href={`${new URL(getSignInUrl()).origin}/settings`}
+                className="text-primary underline underline-offset-2"
+              >
+                Manage your account in Syllabus Sync
+              </a>
+            </p>
+          </div>
         ) : (
           <p className="text-sm">
             You&apos;re browsing anonymously.{' '}
             <a
               href={getSignInUrl()}
-              className="font-medium text-indigo-600 underline underline-offset-2 dark:text-indigo-400"
+              className="font-medium text-primary underline underline-offset-2"
             >
               Sign in with Syllabus Sync
             </a>{' '}
-            to lift the free-message limit. Saved history synced to your account is coming in a
-            later phase.
+            to unlock Sylla beyond the free preview. Saved history synced to your account is
+            coming in a later phase.
           </p>
         )}
+      </Section>
+
+      <Section title="AI status" description="Sylla is fully usable in mock mode — no API key required.">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          {aiConfigured === null ? (
+            <span className={hint}>Checking…</span>
+          ) : aiConfigured ? (
+            <>
+              <span className={badgeLive}>Live AI mode</span>
+              <span className={hint}>Chat uses the configured AI provider.</span>
+            </>
+          ) : (
+            <>
+              <span className={badgeMock}>Mock AI mode</span>
+              <span className={hint}>
+                Chat and study tools return clearly-labelled preview responses.
+              </span>
+            </>
+          )}
+        </div>
       </Section>
 
       <Section
@@ -202,16 +233,17 @@ export function SettingsScreen() {
             Clear local study data
           </button>
           {cleared && (
-            <span role="status" className="text-xs text-green-600">
+            <span role="status" className="text-xs text-success">
               Local study data cleared.
             </span>
           )}
         </div>
       </Section>
 
+      {process.env.NODE_ENV === 'development' && (
       <Section
         title="Developer"
-        description="Development-only controls for exercising the mock AI service."
+        description="Development-only controls for exercising the mock AI service. Not shown in production builds."
       >
         <Row
           label="Mock scenario"
@@ -230,18 +262,11 @@ export function SettingsScreen() {
             <option value="error">Service error</option>
           </select>
         </Row>
-        <p className={hint}>
-          Chat AI provider:{' '}
-          {aiConfigured === null
-            ? 'checking…'
-            : aiConfigured
-              ? 'configured (live model)'
-              : 'not configured — chat streams a canned mock reply'}
-        </p>
       </Section>
+      )}
 
       <Section title="About">
-        <p className="text-sm text-black/60 dark:text-white/60">
+        <p className="text-sm text-muted-foreground">
           Sylla is an AI study assistant in the Syllabus Sync ecosystem — it helps you summarise
           material, understand concepts, make flashcards and quizzes, and plan study time.
         </p>

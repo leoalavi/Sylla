@@ -55,7 +55,7 @@ describe('ExplainTool', () => {
 
     resolve(RESULT);
     expect(await screen.findByText('A function calling itself.')).toBeInTheDocument();
-    expect(screen.getByText('Mock results (dev)')).toBeInTheDocument();
+    expect(screen.getByText('Mock AI mode')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /start over/i })).toBeInTheDocument();
   });
 

@@ -1,5 +1,6 @@
 import { createServerClient as createSupabaseServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { getAuthCookieOptions } from '@/lib/supabase/cookie-options';
 
 // Server-side Supabase client, mirroring the Syllabus Sync pattern.
 //
@@ -13,6 +14,7 @@ export async function createServerClient() {
   const cookieStore = await cookies();
 
   return createSupabaseServerClient(supabaseUrl, supabaseAnonKey, {
+    cookieOptions: getAuthCookieOptions(),
     cookies: {
       getAll() {
         return cookieStore.getAll();

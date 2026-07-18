@@ -67,7 +67,7 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
           router.push('/chat');
           onNavigate?.();
         }}
-        className="mb-1 flex items-center gap-2 rounded-xl border border-dashed border-black/15 px-3 py-2 text-sm text-black/60 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-white/20 dark:text-white/60 dark:hover:text-indigo-400"
+        className="mb-1 flex items-center gap-2 rounded-xl border border-dashed border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-primary/60 hover:text-primary "
       >
         <Plus size={15} aria-hidden /> New conversation
       </button>
@@ -80,7 +80,7 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
           return (
             <form
               key={conversation.id}
-              className="flex items-center gap-1 rounded-xl border border-indigo-400/60 px-2 py-1.5"
+              className="flex items-center gap-1 rounded-xl border border-primary/60 px-2 py-1.5"
               onSubmit={(event) => {
                 event.preventDefault();
                 renameConversation(conversation.id, renameText);
@@ -97,14 +97,14 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
                 onChange={(event) => setRenameText(event.target.value)}
                 className="w-full min-w-0 bg-transparent text-sm outline-none"
               />
-              <button type="submit" aria-label="Save name" className="rounded p-1 text-indigo-500 hover:bg-indigo-500/10">
+              <button type="submit" aria-label="Save name" className="rounded p-1 text-primary hover:bg-primary/10">
                 <Check size={14} aria-hidden />
               </button>
               <button
                 type="button"
                 aria-label="Cancel rename"
                 onClick={() => setRenamingId(null)}
-                className="rounded p-1 text-black/50 hover:bg-black/[0.06] dark:text-white/50 dark:hover:bg-white/[0.08]"
+                className="rounded p-1 text-faint hover:bg-hover"
               >
                 <X size={14} aria-hidden />
               </button>
@@ -116,10 +116,10 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
           <div
             key={conversation.id}
             className={`group relative flex items-center rounded-xl transition-colors ${
-              active
-                ? 'bg-indigo-500/10'
-                : 'hover:bg-black/[0.04] dark:hover:bg-white/[0.06]'
-            }`}
+ active
+ ? 'bg-primary/10'
+ : 'hover:bg-hover'
+ }`}
           >
             <Link
               href={`/chat/${conversation.id}`}
@@ -129,15 +129,15 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
             >
               <span
                 className={`block truncate text-sm ${
-                  active ? 'font-medium text-indigo-600 dark:text-indigo-400' : ''
-                }`}
+ active ? 'font-medium text-primary' : ''
+ }`}
               >
                 {conversation.title}
               </span>
-              <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-black/40 dark:text-white/40">
+              <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-faint">
                 {relativeTime(conversation.updatedAt)}
                 {unit && (
-                  <span className="rounded bg-indigo-500/10 px-1 py-px text-[10px] font-medium text-indigo-600 dark:text-indigo-400">
+                  <span className="rounded bg-primary/10 px-1 py-px text-[10px] font-medium text-primary">
                     {unit.code}
                   </span>
                 )}
@@ -151,7 +151,7 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
                   setRenameText(conversation.title);
                   setRenamingId(conversation.id);
                 }}
-                className="rounded p-1 text-black/45 hover:bg-black/[0.06] hover:text-black/80 dark:text-white/45 dark:hover:bg-white/[0.08] dark:hover:text-white/85"
+                className="rounded p-1 text-faint hover:bg-hover hover:text-foreground"
               >
                 <Pencil size={13} aria-hidden />
               </button>
@@ -159,7 +159,7 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
                 type="button"
                 aria-label={`Delete “${conversation.title}”`}
                 onClick={() => setDeletingId(conversation.id)}
-                className="rounded p-1 text-black/45 hover:bg-red-500/10 hover:text-red-600 dark:text-white/45 dark:hover:text-red-400"
+                className="rounded p-1 text-faint hover:bg-destructive/10 hover:text-destructive"
               >
                 <Trash2 size={13} aria-hidden />
               </button>

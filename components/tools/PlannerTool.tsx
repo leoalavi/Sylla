@@ -79,7 +79,7 @@ export function PlannerTool() {
                 className={input}
               />
               {showValidation && goalInvalid && (
-                <p id="plan-goal-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+                <p id="plan-goal-error" className="mt-1 text-xs text-destructive">
                   Describe the exam, assignment, or goal you&apos;re planning for.
                 </p>
               )}
@@ -100,7 +100,7 @@ export function PlannerTool() {
                   className={input}
                 />
                 {showValidation && deadlineInvalid && (
-                  <p id="plan-deadline-error" className="mt-1 text-xs text-red-600 dark:text-red-400">
+                  <p id="plan-deadline-error" className="mt-1 text-xs text-destructive">
                     Pick a future date.
                   </p>
                 )}
@@ -126,7 +126,7 @@ export function PlannerTool() {
             <div>
               <label htmlFor="plan-priorities" className={label}>
                 Priorities{' '}
-                <span className="font-normal text-black/40 dark:text-white/40">(optional)</span>
+                <span className="font-normal text-faint">(optional)</span>
               </label>
               <input
                 id="plan-priorities"
@@ -144,7 +144,7 @@ export function PlannerTool() {
 
           {otherPlans.length > 0 && (
             <section className="mt-6 space-y-3" aria-label="Your existing study plans">
-              <h2 className="text-sm font-semibold text-black/70 dark:text-white/70">Your plans</h2>
+              <h2 className="text-sm font-semibold text-muted-foreground">Your plans</h2>
               {otherPlans.map((plan) => (
                 <StudyPlanView key={plan.id} plan={plan} />
               ))}

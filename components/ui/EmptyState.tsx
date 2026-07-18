@@ -13,13 +13,13 @@ export function EmptyState({ icon: Icon, title, description, action }: EmptyStat
     <div className="flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
       <span
         aria-hidden
-        className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-500/12 text-indigo-500"
+        className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"
       >
         <Icon size={20} strokeWidth={1.8} />
       </span>
       <div>
         <h3 className="text-sm font-semibold">{title}</h3>
-        <p className="mx-auto mt-1 max-w-sm text-sm text-black/50 dark:text-white/50">
+        <p className="mx-auto mt-1 max-w-sm text-sm text-faint">
           {description}
         </p>
       </div>

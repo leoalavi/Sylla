@@ -38,25 +38,25 @@ export function ChatScreen({ conversationId }: { conversationId: string | null }
       {/* Desktop history panel */}
       <aside
         aria-label="Chat history"
-        className="hidden w-64 shrink-0 overflow-y-auto border-r border-black/5 dark:border-white/10 lg:block"
+        className="hidden w-64 shrink-0 overflow-y-auto border-r border-border/60 lg:block"
       >
         <ConversationList />
       </aside>
 
       <div className="relative flex min-w-0 flex-1 flex-col">
         {/* Mobile toolbar: history toggle + active context */}
-        <div className="flex items-center justify-between gap-2 border-b border-black/5 px-3 py-1.5 dark:border-white/10 lg:hidden">
+        <div className="flex items-center justify-between gap-2 border-b border-border/60 px-3 py-1.5 lg:hidden">
           <button
             type="button"
             onClick={() => setHistoryOpen((open) => !open)}
             aria-expanded={historyOpen}
-            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-black/60 hover:bg-black/[0.05] dark:text-white/60 dark:hover:bg-white/[0.08]"
+            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium text-muted-foreground hover:bg-hover"
           >
             {historyOpen ? <X size={14} aria-hidden /> : <History size={14} aria-hidden />}
             {historyOpen ? 'Close history' : 'History'}
           </button>
           {activeUnit && (
-            <span className="truncate rounded-full bg-indigo-500/10 px-2 py-0.5 text-[11px] font-medium text-indigo-600 dark:text-indigo-400">
+            <span className="truncate rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
               {activeUnit.code}
             </span>
           )}

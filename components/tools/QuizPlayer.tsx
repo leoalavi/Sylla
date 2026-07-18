@@ -43,10 +43,10 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
     return (
       <div className={`${card} p-6 text-center`} role="status">
         <p className="text-sm font-medium">Quiz complete</p>
-        <p className="mt-2 text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+        <p className="mt-2 text-3xl font-bold text-primary">
           {correct} / {mcq.length}
         </p>
-        <p className="mt-1 text-sm text-black/55 dark:text-white/55">
+        <p className="mt-1 text-sm text-muted-foreground">
           multiple-choice questions correct
           {shortCount > 0 && ` · ${shortCount} short-answer ${shortCount === 1 ? 'question' : 'questions'} self-checked`}
         </p>
@@ -75,7 +75,7 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
 
   return (
     <div className={`${card} p-5`}>
-      <p className="text-xs font-medium text-black/50 dark:text-white/50" aria-live="polite">
+      <p className="text-xs font-medium text-faint" aria-live="polite">
         Question {index + 1} of {total}
         {question.kind === 'short-answer' && ' · short answer'}
       </p>
@@ -92,25 +92,25 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
                 <label
                   key={optionIndex}
                   className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-colors ${
-                    showCorrect
-                      ? 'border-green-500/50 bg-green-500/[0.08]'
-                      : showWrong
-                        ? 'border-red-500/50 bg-red-500/[0.08]'
-                        : selected
-                          ? 'border-indigo-400 bg-indigo-500/[0.06]'
-                          : 'border-black/10 hover:border-indigo-300 dark:border-white/12'
-                  }`}
+ showCorrect
+ ? 'border-success/50 bg-success/10'
+ : showWrong
+ ? 'border-destructive/50 bg-destructive/10'
+ : selected
+ ? 'border-primary bg-primary/5'
+ : 'border-border hover:border-primary/50 '
+ }`}
                 >
                   <input
                     type="radio"
                     name={question.id}
                     checked={selected}
                     onChange={() => setAnswer({ value: optionIndex })}
-                    className="accent-indigo-600"
+                    className="accent-primary"
                   />
                   <span className="flex-1">{option}</span>
-                  {showCorrect && <Check size={15} className="text-green-600" aria-label="Correct answer" />}
-                  {showWrong && <X size={15} className="text-red-600" aria-label="Your incorrect answer" />}
+                  {showCorrect && <Check size={15} className="text-success" aria-label="Correct answer" />}
+                  {showWrong && <X size={15} className="text-destructive" aria-label="Your incorrect answer" />}
                 </label>
               );
             })}
@@ -128,11 +128,11 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
             value={typeof answer.value === 'string' ? answer.value : ''}
             onChange={(event) => setAnswer({ value: event.target.value })}
             placeholder="Type your answer…"
-            className="mt-2 w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-400 disabled:opacity-60 dark:border-white/15 dark:bg-white/[0.04]"
+            className="mt-2 w-full rounded-xl border border-border bg-input-bg px-3 py-2 text-sm outline-none focus:border-primary disabled:opacity-60"
           />
           {answer.checked && (
-            <div className="mt-2 rounded-xl border border-indigo-400/30 bg-indigo-500/[0.06] px-3 py-2.5 text-sm">
-              <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+            <div className="mt-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm">
+              <p className="text-xs font-semibold text-primary">
                 Sample answer
               </p>
               <p className="mt-1">{question.sampleAnswer}</p>
@@ -142,13 +142,13 @@ export function QuizPlayer({ quiz }: { quiz: Quiz }) {
       )}
 
       {answer.checked && (
-        <div role="status" className="mt-3 rounded-xl bg-black/[0.03] px-3 py-2.5 text-sm dark:bg-white/[0.05]">
+        <div role="status" className="mt-3 rounded-xl bg-muted px-3 py-2.5 text-sm">
           {question.kind === 'multiple-choice' && (
-            <p className={`font-medium ${mcqCorrect ? 'text-green-600' : 'text-red-600 dark:text-red-400'}`}>
+            <p className={`font-medium ${mcqCorrect ? 'text-success' : 'text-destructive'}`}>
               {mcqCorrect ? 'Correct!' : 'Not quite.'}
             </p>
           )}
-          <p className="mt-0.5 text-black/60 dark:text-white/60">{question.explanation}</p>
+          <p className="mt-0.5 text-muted-foreground">{question.explanation}</p>
         </div>
       )}
 

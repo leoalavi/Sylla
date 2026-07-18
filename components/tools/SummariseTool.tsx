@@ -55,7 +55,7 @@ export function SummariseTool() {
         >
           <div>
             <label htmlFor="summarise-title" className={label}>
-              Title <span className="font-normal text-black/40 dark:text-white/40">(optional)</span>
+              Title <span className="font-normal text-faint">(optional)</span>
             </label>
             <input
               id="summarise-title"
@@ -81,7 +81,7 @@ export function SummariseTool() {
             />
             <p
               id="summarise-text-help"
-              className={`mt-1 text-xs ${showValidation && tooShort ? 'text-red-600 dark:text-red-400' : 'text-black/45 dark:text-white/45'}`}
+              className={`mt-1 text-xs ${showValidation && tooShort ? 'text-destructive' : 'text-faint'}`}
             >
               {showValidation && tooShort
                 ? `Please paste at least ${MIN_CHARS} characters so there is enough to summarise.`
@@ -95,10 +95,10 @@ export function SummariseTool() {
                 <label
                   key={option}
                   className={`cursor-pointer rounded-xl border px-3 py-1.5 text-sm capitalize transition-colors ${
-                    style === option
-                      ? 'border-indigo-400 bg-indigo-500/[0.08] font-medium text-indigo-600 dark:text-indigo-400'
-                      : 'border-black/10 dark:border-white/15'
-                  }`}
+ style === option
+ ? 'border-primary bg-primary/10 font-medium text-primary'
+ : 'border-border'
+ }`}
                 >
                   <input
                     type="radio"
