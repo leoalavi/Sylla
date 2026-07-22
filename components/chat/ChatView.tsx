@@ -1,16 +1,21 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, type UIMessage } from 'ai';
+import { DefaultChatTransport, type FileUIPart, type UIMessage } from 'ai';
 import { AlertTriangle } from 'lucide-react';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { ChatComposer } from '@/components/chat/ChatComposer';
 import { ChatMessageItem, messageText } from '@/components/chat/ChatMessageItem';
 import { SyllaEmptyState } from '@/components/sylla/SyllaEmptyState';
 import { getConversation, createConversation, saveConversationMessages } from '@/lib/sylla/stores/conversations';
+import { getSignInUrl } from '@/lib/sylla/config';
+import { ANON_LIMITS, AUTH_LIMITS } from '@/lib/sylla/quota/limits';
+import { isAnonExhaustionCode, isLongWindowCode } from '@/lib/sylla/quota/errors';
+import { parseQuotaError } from '@/lib/sylla/quota/parse-error';
 import { activeUnitStore } from '@/lib/sylla/stores/unit-context';
 import { useAIConfigured } from '@/lib/sylla/use-ai-status';
 import type { StoredMessage } from '@/lib/sylla/types';
+import { useSupabaseSession } from '@/lib/supabase/use-session';
 
 function toStored(messages: UIMessage[]): StoredMessage[] {
   return messages.map((m) => ({
@@ -56,6 +61,7 @@ export function ChatView({
     [conversationId],
   );
   const idRef = useRef<string | null>(conversationId);
+  const session = useSupabaseSession();
 
   const { messages, sendMessage, setMessages, status, error, regenerate, stop } = useChat({
     id: conversationId ?? undefined,
@@ -65,6 +71,7 @@ export function ChatView({
 
   const aiConfigured = useAIConfigured();
   const isBusy = status === 'submitted' || status === 'streaming';
+  const quotaError = parseQuotaError(error);
 
   // Persist every message change to the local store.
   useEffect(() => {
@@ -99,12 +106,12 @@ export function ChatView({
     window.history.replaceState(null, '', `/chat/${conversation.id}`);
   }
 
-  function handleSend(text: string) {
+  function handleSend(text: string, files?: FileUIPart[]) {
     if (gated || isBusy) return;
     ensureConversation();
     onUserMessageSent?.();
     pinnedRef.current = true;
-    void sendMessage({ text });
+    void sendMessage({ text, files });
   }
 
   function handleEditResend(index: number, newText: string) {
@@ -171,16 +178,27 @@ export function ChatView({
         {error && (
           <div
             role="alert"
-            className="mx-auto flex w-fit items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-sm text-destructive"
+            className="mx-auto flex w-fit max-w-md flex-col items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-2.5 text-center text-sm text-destructive"
           >
-            Something went wrong. Please try again.
-            <button
-              type="button"
-              onClick={() => void regenerate()}
-              className="rounded-lg border border-destructive/40 px-2.5 py-1 text-xs font-medium transition-colors hover:bg-destructive/10"
-            >
-              Retry
-            </button>
+            <span>{quotaError?.message ?? 'Something went wrong. Please try again.'}</span>
+            <div className="flex items-center gap-2">
+              {quotaError && isAnonExhaustionCode(quotaError.code) ? (
+                <a
+                  href={getSignInUrl()}
+                  className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-hover"
+                >
+                  Sign in with Syllabus Sync
+                </a>
+              ) : !quotaError || !isLongWindowCode(quotaError.code) ? (
+                <button
+                  type="button"
+                  onClick={() => void regenerate()}
+                  className="rounded-lg border border-destructive/40 px-2.5 py-1 text-xs font-medium transition-colors hover:bg-destructive/10"
+                >
+                  Retry
+                </button>
+              ) : null}
+            </div>
           </div>
         )}
       </div>
@@ -196,6 +214,8 @@ export function ChatView({
             streaming={isBusy}
             disabled={false}
             hint={composerHint}
+            maxChars={session.isSignedIn ? AUTH_LIMITS.maxMessageChars : ANON_LIMITS.maxMessageChars}
+            isAuthenticated={session.isSignedIn}
           />
         )}
       </div>

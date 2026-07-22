@@ -21,6 +21,8 @@ function renderComposer(overrides: Partial<Parameters<typeof ChatComposer>[0]> =
       onStop={onStop}
       streaming={false}
       disabled={false}
+      maxChars={4000}
+      isAuthenticated
       {...overrides}
     />,
   );
@@ -33,7 +35,7 @@ describe('ChatComposer', () => {
     const { onSend } = renderComposer();
     const box = screen.getByLabelText('Message Sylla');
     await user.type(box, 'hello sylla{Enter}');
-    expect(onSend).toHaveBeenCalledWith('hello sylla');
+    expect(onSend).toHaveBeenCalledWith('hello sylla', undefined);
     expect(box).toHaveValue('');
   });
 
@@ -79,5 +81,25 @@ describe('ChatComposer', () => {
     await user.type(screen.getByLabelText('Message Sylla'), 'unfinished thought');
     const { result } = renderHook(() => useDraft('test'));
     expect(result.current).toBe('unfinished thought');
+  });
+
+  it('disables send and shows an over-limit message past maxChars (supplementary only)', async () => {
+    const user = userEvent.setup();
+    const { onSend } = renderComposer({ maxChars: 10 });
+    await user.type(screen.getByLabelText('Message Sylla'), 'this is way over the limit');
+    expect(screen.getByRole('button', { name: 'Send message' })).toBeDisabled();
+    expect(screen.getByText(/characters over the 10-character limit/)).toBeInTheDocument();
+    await user.keyboard('{Enter}');
+    expect(onSend).not.toHaveBeenCalled();
+  });
+
+  it('disables the file-attach button for anonymous users', () => {
+    renderComposer({ isAuthenticated: false });
+    expect(screen.getByLabelText('Sign in to attach files')).toBeDisabled();
+  });
+
+  it('enables the file-attach button for authenticated users', () => {
+    renderComposer({ isAuthenticated: true });
+    expect(screen.getByLabelText('Attach a PDF or text file')).toBeEnabled();
   });
 });

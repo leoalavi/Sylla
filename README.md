@@ -46,9 +46,10 @@ It's the AI module of the Syllabus Sync ecosystem: it shares the same Supabase p
 
 Sylla is fully usable **with no API key** — every mock path is real, deterministic, and clearly labelled in the UI, so the whole product can be demoed end-to-end before any model is connected.
 
-- **Chat** (`/api/sylla/chat`) uses Google Gemini **only if `GOOGLE_GENERATIVE_AI_API_KEY` is set**. Without it, the endpoint streams a canned mock reply through the same streaming protocol, and the UI shows a "development preview" banner.
-- **Study tools** currently run on a deterministic **mock provider** (`lib/sylla/ai/mock-provider.ts`) — every result is badged **"Mock results (dev)"** in the UI. There is no live model call behind summarise/explain/flashcards/quiz/planner yet.
-- **No RAG, file upload, or real course-data retrieval exists yet.** These are intentionally out of scope for this phase — see [Roadmap](#roadmap).
+- **Chat** (`/api/sylla/chat`) uses Google Gemini **only if `GOOGLE_GENERATIVE_AI_API_KEY` is set**. Without it, the endpoint streams a canned mock reply through the same streaming protocol, and the UI shows a "Mock AI mode" banner.
+- **Every chat request is rate-limited and quota-enforced server-side** — anonymous and signed-in users get different daily/monthly/per-minute allowances, message-length caps, and output-token caps, atomically reserved in Postgres so concurrent requests can't bypass a limit. Authenticated users can attach one PDF/`.txt` file per message (2 uploads/day). See **[docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)** for the exact numbers, required env vars, and how this was verified against a real Postgres instance.
+- **Study tools** currently run on a deterministic **mock provider** (`lib/sylla/ai/mock-provider.ts`) — every result is badged **"Mock AI mode"** in the UI. There is no live model call behind summarise/explain/flashcards/quiz/planner yet, and no server-side quota on them (they don't call Gemini).
+- **No RAG or real course-data retrieval exists yet.** These are intentionally out of scope for this phase — see [Roadmap](#roadmap).
 - The exact interface and integration point for connecting a real AI provider to the study tools is documented in **[docs/api-integration.md](docs/api-integration.md)** — swapping in a live provider is a one-file change, not a UI rewrite.
 
 ## Architecture
@@ -57,6 +58,8 @@ Sylla is fully usable **with no API key** — every mock path is real, determini
 flowchart LR
     UI["Next.js App Router UI\n(chat, tools, saved, settings)"] --> Stores["localStorage stores\n(conversations, saved items,\nsettings, study plans)"]
     UI --> ChatAPI["/api/sylla/chat\n(Vercel AI SDK streamText)"]
+    ChatAPI --> Quota["Quota RPCs\n(atomic, Postgres advisory lock)"]
+    Quota --> QuotaDB[("sylla_ai_requests\nsylla_active_generations")]
     UI --> ToolSvc["StudyToolService\n(typed interface)"]
     ToolSvc --> Mock["Mock provider\n(deterministic, dev-only)"]
     ToolSvc -.future.-> Live["Live provider\n(your AI backend)"]
@@ -99,6 +102,9 @@ Every variable is optional — Sylla runs fully in demo/mock mode with none of t
 | `NEXT_PUBLIC_SUPABASE_URL` | Optional | Public (browser-safe) | No Supabase session awareness — every visitor is treated as anonymous. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Optional | Public (browser-safe) | Same as above. |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Optional | **Server-only — never expose with `NEXT_PUBLIC_`** | Chat streams a labelled mock reply instead of a real Gemini response. |
+| `GEMINI_MODEL` | Optional | Server-only | Defaults to `gemini-3.5-flash-lite`. Never client-selectable. |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Required for quota enforcement** | **Server-only — never expose with `NEXT_PUBLIC_`** | Without it, all rate limits/quotas are skipped (loudly logged) — do not run a real Gemini key in production without this set. See [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md). |
+| `SYLLA_IP_HASH_SALT` | Recommended | Server-only | Without it, anonymous rate limiting relies on the cookie alone (easier to bypass by clearing cookies). |
 | `NEXT_PUBLIC_SYLLABUS_SYNC_URL` | Optional | Public (browser-safe) | Sign-in CTA falls back to the production Syllabus Sync URL. |
 | `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` | Production only | Public (browser-safe) | Host-only auth cookies — sessions aren't shared across the `syllabus-sync.app` subdomains. |
 | `NEXT_PUBLIC_SYLLA_URL` | Optional | Public (browser-safe) | Only used for redirect/deployment documentation. |
@@ -116,12 +122,11 @@ No screenshots yet. Run `npm run dev` and visit `/`, `/chat`, `/tools`, `/saved`
 **Phase 1 — connect the real backend**
 - Improve chat prompt quality and conversation handling
 - Connect a real AI provider to the study tools (`StudyToolService` live implementation)
-- Add server-side usage/rate limits for chat
+- ~~Add server-side usage/rate limits for chat~~ ✅ done — see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)
 - Add Supabase-backed persistence for conversations and saved items
 
 **Phase 2 — richer context**
-- File upload for study material
-- RAG over uploaded documents and unit material
+- RAG over uploaded documents and unit material (chat can already accept a PDF/`.txt` file; there's no retrieval/embedding yet)
 - Embed Sylla inside Syllabus Sync as an assistant panel
 - Cross-device saved items and conversation sync
 
@@ -131,18 +136,19 @@ No screenshots yet. Run `npm run dev` and visit `/`, `/chat`, `/tools`, `/saved`
 
 ## Privacy and trust
 
-- **Local-first today:** conversations, saved items, study plans, and preferences live only in your browser's `localStorage` — nothing is uploaded unless a Gemini key is configured, in which case chat messages are sent to Google's API to generate a reply.
+- **Local-first today:** conversations, saved items, study plans, and preferences live only in your browser's `localStorage` — nothing is uploaded unless a Gemini key is configured, in which case chat messages (and any attached file's extracted text) are sent to Google's API to generate a reply.
 - **No invented university data.** Unit context uses clearly-labelled sample data; Sylla is designed to flag uncertainty rather than fabricate academic information, and never claims to access official Macquarie University systems, records, or grades.
-- **The anonymous 3-message limit is a UX gate, not a security boundary** — it's tracked client-side and can be reset by clearing browser storage. Server-side enforcement is planned (see [Roadmap](#roadmap)).
-- **No file upload or RAG exists yet** — nothing you paste into a study tool is sent anywhere beyond generating that one mock or (once connected) live result.
+- **Chat request limits are enforced server-side** (see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)) — this is a real security boundary, not just a UX gate. The anonymous-visitor identity signal (cookie + salted IP hash) is still best-effort, not perfect identity enforcement; raw IP addresses are never stored.
+- **No RAG exists yet** — an uploaded file's extracted text is used only for that one reply, capped at 20,000 characters, then discarded (no persistence, no embeddings, no retrieval over past uploads). Study tools don't accept file uploads or send anything to Gemini yet (mock only).
 
 ## Known limitations
 
-- Study-tool results are mock/deterministic data, clearly badged in the UI, until a live AI provider is connected.
+- Study-tool results are mock/deterministic data, clearly badged in the UI, until a live AI provider is connected — they are not covered by the Gemini quota system since they don't call Gemini.
 - All persistence is per-browser (`localStorage`) — there's no account-level sync across devices yet.
-- The anonymous chat limit is enforced client-side only.
+- Anonymous/authenticated identity for rate limiting is best-effort (cookie + salted IP hash), not perfect — see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md).
 - A signed-in Syllabus Sync session isn't yet visible to Sylla in production — that requires both apps to share a cookie domain (see [docs/sylla-architecture.md](docs/sylla-architecture.md)).
-- No file upload, RAG, or real course-data retrieval yet — intentionally deferred to a later phase.
+- No RAG or real course-data retrieval yet — intentionally deferred to a later phase.
+- The quota-and-usage migration is written and verified locally, but not yet applied to the live shared Supabase project — see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md) for the deploy step.
 
 ## Repository structure
 
@@ -167,12 +173,15 @@ lib/
   sylla/
     types.ts              Domain models (conversations, decks, quizzes, plans…)
     ai/                    StudyToolService interface + mock provider — the API boundary
+    quota/                 Rate-limit/quota logic: identity, validation, RPC wrapper, error vocabulary
+    files/                 PDF/text extraction + validation (unpdf-based, no native deps)
     store.ts, stores/      Typed localStorage stores (SSR-safe, versioned)
     config.ts, prompts.ts, units.ts, usage-limit.ts
-  supabase/                Browser/server Supabase clients + session hook (shared project)
+  supabase/                Browser/server/admin Supabase clients + session hook (shared project)
 
-tests/                  Vitest suites (mock provider, stores, chat composer, tool UI)
-docs/                   Architecture, API integration guide, Phase 1 history
+supabase/migrations/    sylla_ai_requests / sylla_active_generations tables + atomic RPCs
+tests/                  Vitest suites (mock provider, stores, chat composer, tool UI, quota, PDF validation)
+docs/                   Architecture, API integration guide, quota & cost control, Phase 1 history
 ```
 
 ## Quality checks
@@ -180,14 +189,20 @@ docs/                   Architecture, API integration guide, Phase 1 history
 ```bash
 npm run lint       # ESLint — passes
 npm run typecheck  # tsc --noEmit — passes
-npm test           # Vitest — 40 tests passing
-npm run build      # Production build — succeeds, 15 routes
+npm test           # Vitest — 106 tests passing
+npm run build      # Production build — succeeds, 15 routes + proxy middleware
 ```
+
+The `supabase/migrations/` SQL was additionally applied to and exercised
+against a real local Postgres 16 instance (rolling windows, cooldown,
+concurrency under genuine parallel load, file-upload limits, cleanup) — see
+[docs/quota-and-cost-control.md](docs/quota-and-cost-control.md) for details.
 
 ## Docs
 
 - **[docs/sylla-architecture.md](docs/sylla-architecture.md)** — dual-mode (standalone + future embedded) architecture, shared-auth deployment options, future database schema.
 - **[docs/api-integration.md](docs/api-integration.md)** — exactly where and how to connect a real AI provider.
+- **[docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)** — Gemini rate limits/quotas, required env vars, migration deployment, billing budget recommendations.
 - **[docs/sylla-mvp.md](docs/sylla-mvp.md)** — Phase 1 project history (superseded by the sections above).
 
 <div align="center">
