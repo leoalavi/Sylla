@@ -15,6 +15,9 @@ export const maxDuration = 30;
 // enforced client-side in Phase 1).
 const MAX_MESSAGES = 40;
 
+// Allow overriding the Gemini model via env without a code change/redeploy.
+const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite';
+
 // This route is the single AI entry point for BOTH deployment modes:
 // - standalone Sylla (anonymous preview + signed-in users)
 // - embedded Sylla inside Syllabus Sync (always signed in)
@@ -50,7 +53,7 @@ export async function POST(req: Request) {
   }
 
   const result = streamText({
-    model: google('gemini-2.5-flash'),
+    model: google(GEMINI_MODEL),
     system: buildSyllaSystemPrompt(),
     messages: await convertToModelMessages(messages),
   });
