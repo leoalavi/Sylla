@@ -2,7 +2,7 @@
 
 # Sylla
 
-**Sylla — the AI study assistant for Syllabus Sync.**
+**Sylla - the AI study assistant for Syllabus Sync.**
 
 Sylla helps turn your units, notes, and study goals into summaries, flashcards, quizzes, and study plans — one account, one design language, one ecosystem with [Syllabus Sync](https://www.syllabus-sync.app).
 
