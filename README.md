@@ -210,16 +210,16 @@ concurrency under genuine parallel load, file-upload limits, cleanup) — see
 ### `> ping --author`
 
 ```text
-> Target     : Pouya Alavi Naeini — Software Engineer | Applied AI/ML
+> Target     : Leo Alavi — Software Engineer | Applied AI/ML
 > University : Macquarie University, Sydney, NSW
 > Major      : B.IT — Artificial Intelligence & Web/App Development
 > Status     : [●] ONLINE — open to grad & junior opportunities
 ```
 
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-EE4C2C?style=for-the-badge&logo=linkedin&logoColor=ffffff&labelColor=0f172a)](https://www.linkedin.com/in/pouya-alavi/)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-F7931E?style=for-the-badge&logo=github&logoColor=ffffff&labelColor=0f172a)](https://github.com/mrpouyaalavi)
-[![Email](https://img.shields.io/badge/Email-Contact-f59e0b?style=for-the-badge&logo=gmail&logoColor=09090b&labelColor=0f172a)](mailto:pouya@pouyaalavi.dev)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-EE4C2C?style=for-the-badge&logo=linkedin&logoColor=ffffff&labelColor=0f172a)](https://www.linkedin.com/in/leo-alavi/)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-F7931E?style=for-the-badge&logo=github&logoColor=ffffff&labelColor=0f172a)](https://github.com/leoaalavi)
+[![Email](https://img.shields.io/badge/Email-Contact-f59e0b?style=for-the-badge&logo=gmail&logoColor=09090b&labelColor=0f172a)](mailto:leo@leoalavi.dev)
 
 <br/>
 <div/>
