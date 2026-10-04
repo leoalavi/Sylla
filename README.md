@@ -2,9 +2,9 @@
 
 # Sylla
 
-**Sylla - the AI study assistant for Syllabus Sync.**
+**Sylla — AI-Assisted Study Platform for the Syllabus Sync ecosystem.**
 
-Sylla helps turn your units, notes, and study goals into summaries, flashcards, quizzes, and study plans — one account, one design language, one ecosystem with [Syllabus Sync](https://www.syllabus-sync.app).
+Sylla is an AI-assisted study platform under active development, combining streaming chat with early study workflows for explanations, summaries, and structured learning support. It is designed as a connected study layer within the broader [Syllabus Sync](https://www.syllabus-sync.app) ecosystem.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=000)](https://react.dev)
@@ -14,7 +14,7 @@ Sylla helps turn your units, notes, and study goals into summaries, flashcards, 
 [![Vercel AI SDK](https://img.shields.io/badge/Vercel_AI_SDK-v7-000000?style=flat-square&logo=vercel)](https://sdk.vercel.ai)
 [![Vitest](https://img.shields.io/badge/tested_with-Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=fff)](https://vitest.dev)
 
-[Syllabus Sync](https://www.syllabus-sync.app) · [Architecture](docs/sylla-architecture.md) · [API integration guide](docs/api-integration.md) · Live demo — planned at `sylla.syllabus-sync.app`
+[Live App](https://sylla.syllabus-sync.app) · [Syllabus Sync](https://www.syllabus-sync.app) · [Architecture](docs/sylla-architecture.md) · [API Integration Guide](docs/api-integration.md)
 
 </div>
 
@@ -24,9 +24,9 @@ Sylla helps turn your units, notes, and study goals into summaries, flashcards, 
 
 ## What is Sylla?
 
-University course material is scattered and dense — lecture slides, readings, assignment briefs — and turning it into something you can actually study from takes time. Sylla is a focused AI study assistant that does that translation work: chat about your material, get it summarised, have a concept explained at the right depth, generate flashcards and practice quizzes, or turn a goal and a deadline into a scheduled plan.
+Sylla is being developed to help students work with study material through chat and structured workflows. The current application includes streaming chat, saved content, study-tool interfaces, and browser-local persistence. Several study tools still use clearly labelled deterministic mock providers until their live AI integrations are connected.
 
-It's the AI module of the Syllabus Sync ecosystem: it shares the same Supabase project and user accounts, mirrors the Syllabus Sync (Macquarie-palette) design system, and its sign-in flow IS Syllabus Sync's login. A future phase embeds the same chat core directly inside the main platform as an assistant panel (see [Architecture](#architecture)).
+It is the connected AI-assisted study layer of the Syllabus Sync ecosystem, currently running as a separate application. Sylla uses the same Supabase project and directs sign-in to Syllabus Sync; seamless cross-app session sharing is not yet fully deployed. A future phase may embed the chat core inside the main platform as an assistant panel (see [Architecture](#architecture)).
 
 **Who it's for:** university students who want a lightweight study companion without switching between five different tools — and, as a portfolio piece, an example of building a typed, testable product foundation with a clean seam for swapping in a real AI backend later.
 
@@ -47,7 +47,7 @@ It's the AI module of the Syllabus Sync ecosystem: it shares the same Supabase p
 Sylla is fully usable **with no API key** — every mock path is real, deterministic, and clearly labelled in the UI, so the whole product can be demoed end-to-end before any model is connected.
 
 - **Chat** (`/api/sylla/chat`) uses Google Gemini **only if `GOOGLE_GENERATIVE_AI_API_KEY` is set**. Without it, the endpoint streams a canned mock reply through the same streaming protocol, and the UI shows a "Mock AI mode" banner.
-- **Every chat request is rate-limited and quota-enforced server-side** — anonymous and signed-in users get different daily/monthly/per-minute allowances, message-length caps, and output-token caps, atomically reserved in Postgres so concurrent requests can't bypass a limit. Authenticated users can attach one PDF/`.txt` file per message (2 uploads/day). See **[docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)** for the exact numbers, required env vars, and how this was verified against a real Postgres instance.
+- **The chat route implements server-side quotas when its service-role configuration is present** — anonymous and signed-in users have different daily/monthly/per-minute allowances, message-length caps, and output-token caps, atomically reserved in Postgres. Production quota enforcement has not been independently verified. Authenticated users can attach one PDF/`.txt` file per message (2 uploads/day when quota enforcement is configured). See **[docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)** for the exact numbers and required env vars.
 - **Study tools** currently run on a deterministic **mock provider** (`lib/sylla/ai/mock-provider.ts`) — every result is badged **"Mock AI mode"** in the UI. There is no live model call behind summarise/explain/flashcards/quiz/planner yet, and no server-side quota on them (they don't call Gemini).
 - **No RAG or real course-data retrieval exists yet.** These are intentionally out of scope for this phase — see [Roadmap](#roadmap).
 - The exact interface and integration point for connecting a real AI provider to the study tools is documented in **[docs/api-integration.md](docs/api-integration.md)** — swapping in a live provider is a one-file change, not a UI rewrite.
@@ -138,7 +138,7 @@ No screenshots yet. Run `npm run dev` and visit `/`, `/chat`, `/tools`, `/saved`
 
 - **Local-first today:** conversations, saved items, study plans, and preferences live only in your browser's `localStorage` — nothing is uploaded unless a Gemini key is configured, in which case chat messages (and any attached file's extracted text) are sent to Google's API to generate a reply.
 - **No invented university data.** Unit context uses clearly-labelled sample data; Sylla is designed to flag uncertainty rather than fabricate academic information, and never claims to access official Macquarie University systems, records, or grades.
-- **Chat request limits are enforced server-side** (see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)) — this is a real security boundary, not just a UX gate. The anonymous-visitor identity signal (cookie + salted IP hash) is still best-effort, not perfect identity enforcement; raw IP addresses are never stored.
+- **Chat request limits have a server-side implementation** (see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md)), but enforcement depends on the server-only service-role configuration and has not been independently verified in production. The anonymous-visitor identity signal (cookie + salted IP hash) is best-effort, not perfect identity enforcement; raw IP addresses are never stored.
 - **No RAG exists yet** — an uploaded file's extracted text is used only for that one reply, capped at 20,000 characters, then discarded (no persistence, no embeddings, no retrieval over past uploads). Study tools don't accept file uploads or send anything to Gemini yet (mock only).
 
 ## Known limitations
@@ -148,7 +148,7 @@ No screenshots yet. Run `npm run dev` and visit `/`, `/chat`, `/tools`, `/saved`
 - Anonymous/authenticated identity for rate limiting is best-effort (cookie + salted IP hash), not perfect — see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md).
 - A signed-in Syllabus Sync session isn't yet visible to Sylla in production — that requires both apps to share a cookie domain (see [docs/sylla-architecture.md](docs/sylla-architecture.md)).
 - No RAG or real course-data retrieval yet — intentionally deferred to a later phase.
-- The quota-and-usage migration is written and verified locally, but not yet applied to the live shared Supabase project — see [docs/quota-and-cost-control.md](docs/quota-and-cost-control.md) for the deploy step.
+- The quota tables and functions exist in the shared production Supabase project, but Sylla's creation migration is not recorded in the shared migration history. Schema ownership and migration history still need reconciliation; production quota enforcement remains unverified.
 
 ## Repository structure
 
@@ -210,7 +210,7 @@ concurrency under genuine parallel load, file-upload limits, cleanup) — see
 ### `> ping --author`
 
 ```text
-> Target     : Leo Alavi — Software Engineer | Applied AI/ML
+> Target     : Leo Alavi — Software Engineer | Applied AI
 > University : Macquarie University, Sydney, NSW
 > Major      : B.IT — Artificial Intelligence & Web/App Development
 > Status     : [●] ONLINE — open to grad & junior opportunities
