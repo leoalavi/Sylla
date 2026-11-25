@@ -17,6 +17,7 @@ import { ANON_LIMITS, AUTH_LIMITS } from '@/lib/sylla/quota/limits';
 import { finalizeRequest, reserveChatQuota, reserveUploadQuota } from '@/lib/sylla/quota/service';
 import { validateFileUploadPolicy, validateMessageLength, type FilePartLike } from '@/lib/sylla/quota/validate';
 import { buildSyllaSystemPrompt } from '@/lib/sylla/prompts';
+import { formatStudentContext, loadStudentContext } from '@/lib/sylla/student-context';
 import { getSupabaseAdminClient } from '@/lib/supabase/admin';
 import { createServerClient } from '@/lib/supabase/server';
 
@@ -54,6 +55,20 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite';
 // is NOT protected from abuse. Never run a real GOOGLE_GENERATIVE_AI_API_KEY
 // in production without it configured.
 // ============================================================================
+
+/**
+ * The client IP for the anonymous quota. On Cloudflare Workers the
+ * authoritative value is CF-Connecting-IP, which Cloudflare always overwrites.
+ * It is trusted only there: on any other host a client could send that header
+ * itself to dodge the anonymous limit.
+ */
+function clientIpHeader(requestHeaders: Headers): string | null {
+  if (process.env.DEPLOYMENT_PLATFORM === 'cloudflare') {
+    const cfIp = requestHeaders.get('cf-connecting-ip');
+    if (cfIp) return cfIp;
+  }
+  return requestHeaders.get('x-forwarded-for');
+}
 
 function jsonError(message: string, status: number) {
   return Response.json({ error: 'validation_error', message }, { status });
@@ -111,7 +126,7 @@ export async function POST(req: Request) {
   const identity = resolveIdentity(
     user?.id ?? null,
     cookieStore,
-    requestHeaders.get('x-forwarded-for'),
+    clientIpHeader(requestHeaders),
     process.env.SYLLA_IP_HASH_SALT,
   );
 
@@ -225,9 +240,13 @@ export async function POST(req: Request) {
     return createMockStreamResponse(() => finalize('succeeded'));
   }
 
+  // Signed-in students get answers grounded in their own Syllabus Sync data
+  // (read through RLS with their session; see lib/sylla/student-context.ts).
+  const studentContext = user ? formatStudentContext(await loadStudentContext(supabase, user.id)) : '';
+
   const result = streamText({
     model: google(GEMINI_MODEL),
-    system: buildSyllaSystemPrompt(),
+    system: buildSyllaSystemPrompt({ studentContext }),
     messages: await convertToModelMessages(modelInputMessages),
     maxOutputTokens,
     onError: ({ error }) => {

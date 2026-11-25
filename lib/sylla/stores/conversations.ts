@@ -10,7 +10,7 @@ import { newId, type Conversation, type StoredMessage } from '@/lib/sylla/types'
 
 const MAX_CONVERSATIONS = 50;
 
-export const conversationsStore = createLocalStore<Conversation[]>('conversations', []);
+export const conversationsStore = createLocalStore<Conversation[]>('conversations', [], { scoped: true });
 
 export function useConversations(): Conversation[] {
   return conversationsStore.use();

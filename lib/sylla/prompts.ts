@@ -11,27 +11,17 @@ Behaviour:
 - Encourage users to verify important academic requirements through official university sources.`;
 
 /**
- * Context the embedded (Syllabus Sync) mode will inject in future phases.
- * All fields are user-owned app data — never official university records.
+ * Extra, per-request context. `studentContext` is the pre-formatted block from
+ * lib/sylla/student-context.ts: the signed-in student's own Syllabus Sync
+ * units, deadlines and to-dos (never official university records).
  */
 export interface SyllaPromptContext {
-  // TODO(embedded): tasks / study-planner items the user is working on.
-  // TODO(embedded): upcoming deadlines from the user's Syllabus Sync calendar.
-  // TODO(embedded): enrolled-unit info the user has added to Syllabus Sync.
-  // TODO(rag): retrieved snippets from the user's uploaded documents
-  //            (sylla_documents + vector search).
-  placeholder?: never;
+  studentContext?: string;
 }
 
-/**
- * Builds the system prompt for a request. Today this returns the base prompt
- * unchanged; embedded mode will append serialized {@link SyllaPromptContext}
- * sections so Sylla can reason about the user's planner, deadlines, and units.
- */
+/** Builds the system prompt for a request: the base prompt plus any context. */
 export function buildSyllaSystemPrompt(context?: SyllaPromptContext): string {
-  void context; // reserved for embedded-mode prompt sections
-  // TODO(embedded): append context sections, e.g.
-  //   "The student's upcoming deadlines (from their own Syllabus Sync data): …"
-  // Keep each section clearly labelled as user-provided app data.
-  return SYLLA_SYSTEM_PROMPT;
+  const studentContext = context?.studentContext?.trim();
+  if (!studentContext) return SYLLA_SYSTEM_PROMPT;
+  return `${SYLLA_SYSTEM_PROMPT}\n\n## Student context\n${studentContext}`;
 }

@@ -8,7 +8,7 @@ import { newId, type SavedItem } from '@/lib/sylla/types';
 
 const MAX_SAVED = 100;
 
-export const savedItemsStore = createLocalStore<SavedItem[]>('saved-items', []);
+export const savedItemsStore = createLocalStore<SavedItem[]>('saved-items', [], { scoped: true });
 
 export function useSavedItems(): SavedItem[] {
   return savedItemsStore.use();

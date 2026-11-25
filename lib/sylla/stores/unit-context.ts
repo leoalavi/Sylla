@@ -7,7 +7,7 @@ import type { StudyUnit } from '@/lib/sylla/types';
 // Which unit Sylla is currently "studying in the context of".
 // null = general chat (no unit context).
 
-export const activeUnitStore = createLocalStore<string | null>('active-unit', null);
+export const activeUnitStore = createLocalStore<string | null>('active-unit', null, { scoped: true });
 
 export function useActiveUnit(): StudyUnit | null {
   const id = activeUnitStore.use();

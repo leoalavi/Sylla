@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { bumpNewChat } from '@/lib/sylla/stores/new-chat';
+import { StorageScopeSync } from '@/components/shell/StorageScopeSync';
 import { ThemeController } from '@/components/shell/ThemeController';
 import { UnitContextPicker } from '@/components/shell/UnitContextPicker';
 import { useSupabaseSession } from '@/lib/supabase/use-session';
@@ -96,6 +97,17 @@ function AccountSection() {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
+  // The embedded panel (framed by Syllabus Sync) has its own chrome and
+  // follows the host's theme (app/embed/EmbedChat.tsx), not Sylla's setting.
+  if (pathname?.startsWith('/embed')) {
+    return (
+      <div className="flex h-dvh flex-col">
+        <StorageScopeSync />
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-dvh">
       <a
@@ -105,6 +117,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       <ThemeController />
+      <StorageScopeSync />
 
       {/* Desktop sidebar */}
       <aside className="hidden h-full w-60 shrink-0 flex-col gap-4 overflow-y-auto border-r border-border/60 bg-card/60 p-4 lg:flex">

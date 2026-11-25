@@ -15,8 +15,46 @@ const PREFIX = 'sylla:v1:';
 
 const registry = new Map<string, { clear: () => void }>();
 
+// ---------------------------------------------------------------------------
+// Per-account storage scope.
+//
+// Private stores (chat history, drafts, saved items, study plans, active unit)
+// are saved under a key that includes the current account, so on a shared
+// browser one student never sees another's Sylla history, and signed-out use
+// is kept apart from every account:
+//   sylla:v1:<name>:u:<user id>   signed in
+//   sylla:v1:<name>:anon          signed out
+// Until the session check finishes the scope is null: scoped stores read as
+// empty and keep writes in memory only, so nothing is shown or saved under the
+// wrong account. StorageScopeSync (components/shell) sets the scope.
+//
+// Data saved before scoping existed (sylla:v1:<name>, no suffix) cannot be
+// attributed to an account, so it is never read here. It is left in place,
+// not deleted, until a decision is made about it.
+// ---------------------------------------------------------------------------
+
+let storageScope: string | null = null;
+const scopeListeners = new Set<() => void>();
+
+/** `u:<userId>` when signed in, `anon` when signed out. */
+export function scopeForUser(userId: string | null | undefined): string {
+  return userId ? `u:${userId}` : 'anon';
+}
+
+export function getStorageScope(): string | null {
+  return storageScope;
+}
+
+/** Switches every scoped store to another account's (or anonymous) data. */
+export function setStorageScope(next: string | null): void {
+  if (next === storageScope) return;
+  storageScope = next;
+  scopeListeners.forEach((listener) => listener());
+}
+
 export interface LocalStore<T> {
-  key: string;
+  /** Current localStorage key; null for a scoped store before the scope is known. */
+  readonly key: string | null;
   get: () => T;
   set: (next: T | ((prev: T) => T)) => void;
   subscribe: (listener: () => void) => () => void;
@@ -32,6 +70,8 @@ export interface LocalStoreOptions<T> {
    * stale persisted object is returned as-is.
    */
   migrate?: (persisted: unknown) => T;
+  /** Private per-account data: stored under the current storage scope. */
+  scoped?: boolean;
 }
 
 export function createLocalStore<T>(
@@ -39,12 +79,19 @@ export function createLocalStore<T>(
   initial: T,
   options: LocalStoreOptions<T> = {},
 ): LocalStore<T> {
-  const key = PREFIX + name;
+  const baseKey = PREFIX + name;
   const listeners = new Set<() => void>();
   let cached: T = initial;
-  let loaded = false;
+  // The key the cache was loaded for; undefined = not loaded yet.
+  let loadedKey: string | null | undefined;
 
-  function read(): T {
+  function currentKey(): string | null {
+    if (!options.scoped) return baseKey;
+    return storageScope ? `${baseKey}:${storageScope}` : null;
+  }
+
+  function read(key: string | null): T {
+    if (key === null) return initial;
     try {
       const raw = window.localStorage.getItem(key);
       if (raw === null) return initial;
@@ -58,9 +105,10 @@ export function createLocalStore<T>(
 
   function get(): T {
     if (typeof window === 'undefined') return initial;
-    if (!loaded) {
-      cached = read();
-      loaded = true;
+    const key = currentKey();
+    if (loadedKey !== key) {
+      cached = read(key);
+      loadedKey = key;
     }
     return cached;
   }
@@ -71,21 +119,32 @@ export function createLocalStore<T>(
 
   function set(next: T | ((prev: T) => T)) {
     const value = typeof next === 'function' ? (next as (prev: T) => T)(get()) : next;
+    const key = currentKey();
     cached = value;
-    loaded = true;
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      // Storage full/blocked — in-memory state still updates for this session.
+    loadedKey = key;
+    if (key !== null) {
+      try {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      } catch {
+        // Storage full/blocked — in-memory state still updates for this session.
+      }
     }
     notify();
+  }
+
+  if (options.scoped) {
+    // Re-read (and re-render) whenever the account changes.
+    scopeListeners.add(() => {
+      loadedKey = undefined;
+      notify();
+    });
   }
 
   function subscribe(listener: () => void) {
     listeners.add(listener);
     const onStorage = (event: StorageEvent) => {
-      if (event.key === key || event.key === null) {
-        loaded = false; // re-read on next get()
+      if (event.key === null || event.key === currentKey()) {
+        loadedKey = undefined; // re-read on next get()
         listener();
       }
     };
@@ -101,18 +160,31 @@ export function createLocalStore<T>(
     return useSyncExternalStore(subscribe, get, () => initial);
   }
 
+  /** Clears the current account's (or anonymous) copy only. */
   function clear() {
-    try {
-      window.localStorage.removeItem(key);
-    } catch {
-      // ignore
+    const key = currentKey();
+    if (key !== null) {
+      try {
+        window.localStorage.removeItem(key);
+      } catch {
+        // ignore
+      }
     }
     cached = initial;
-    loaded = true;
+    loadedKey = key;
     notify();
   }
 
-  const store: LocalStore<T> = { key, get, set, subscribe, use, clear };
+  const store: LocalStore<T> = {
+    get key() {
+      return currentKey();
+    },
+    get,
+    set,
+    subscribe,
+    use,
+    clear,
+  };
   registry.set(name, store);
   return store;
 }

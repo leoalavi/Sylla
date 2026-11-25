@@ -5,7 +5,7 @@ import { createLocalStore } from '@/lib/sylla/store';
 // Composer drafts keyed by conversation id ('draft' = the unsent new-chat
 // composer), so typed input survives navigation.
 
-const draftsStore = createLocalStore<Record<string, string>>('chat-drafts', {});
+const draftsStore = createLocalStore<Record<string, string>>('chat-drafts', {}, { scoped: true });
 
 export function useDraft(key: string): string {
   const drafts = draftsStore.use();

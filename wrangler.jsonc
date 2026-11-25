@@ -1,0 +1,41 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Sylla on Cloudflare Workers (OpenNext), at sylla.syllabus-sync.app.
+  "name": "sylla-production",
+  "main": ".open-next/worker.js",
+
+  "compatibility_date": "2026-07-22",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "sylla-production",
+    },
+  ],
+
+  // Public, non-secret values. NEXT_PUBLIC_* are compiled into the bundle at
+  // build time, so tools/cloudflare/build.mjs passes these into `next build`.
+  // Secrets (SUPABASE_SERVICE_ROLE_KEY, GOOGLE_GENERATIVE_AI_API_KEY,
+  // SYLLA_IP_HASH_SALT) are set with `wrangler secret put`, never here.
+  // NEXT_PUBLIC_SUPABASE_URL / _ANON_KEY come from the build environment (.env).
+  "vars": {
+    "DEPLOYMENT_PLATFORM": "cloudflare",
+    "NEXT_PUBLIC_AUTH_COOKIE_DOMAIN": ".syllabus-sync.app",
+    "NEXT_PUBLIC_SYLLABUS_SYNC_URL": "https://www.syllabus-sync.app",
+    "NEXT_PUBLIC_SYLLA_URL": "https://sylla.syllabus-sync.app",
+  },
+
+  "observability": {
+    "enabled": true,
+  },
+
+  // Served on sylla.syllabus-sync.app once DNS is switched from Vercel (see
+  // README → Deploying). Until then it is reachable on workers.dev for testing.
+  "workers_dev": true,
+}

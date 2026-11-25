@@ -39,6 +39,11 @@ export interface ChatViewProps {
   gateNotice?: ReactNode;
   composerHint?: string;
   onUserMessageSent?: () => void;
+  /**
+   * Standalone mode moves the URL to /chat/[id] once a conversation exists.
+   * The embedded panel turns this off so the framed page stays on /embed.
+   */
+  syncUrl?: boolean;
 }
 
 /**
@@ -55,6 +60,7 @@ export function ChatView({
   gateNotice,
   composerHint,
   onUserMessageSent,
+  syncUrl = true,
 }: ChatViewProps) {
   const initialMessages = useMemo(
     () => (conversationId ? toUI(getConversation(conversationId)?.messages ?? []) : []),
@@ -104,7 +110,7 @@ export function ChatView({
     idRef.current = conversation.id;
     // Shallow URL update — keeps the in-flight stream alive; a reload lands
     // on /chat/[id] and rehydrates from the store.
-    window.history.replaceState(null, '', `/chat/${conversation.id}`);
+    if (syncUrl) window.history.replaceState(null, '', `/chat/${conversation.id}`);
   }
 
   function handleSend(text: string, files?: FileUIPart[]) {

@@ -7,7 +7,7 @@ import type { StudyPlan } from '@/lib/sylla/types';
 // in place. TODO(phase 2): move to Supabase alongside planner integration
 // with Syllabus Sync's real task/deadline data.
 
-export const studyPlansStore = createLocalStore<StudyPlan[]>('study-plans', []);
+export const studyPlansStore = createLocalStore<StudyPlan[]>('study-plans', [], { scoped: true });
 
 export function useStudyPlans(): StudyPlan[] {
   return studyPlansStore.use();
