@@ -5,6 +5,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { badgeLive, badgeMock, btnDanger, card, hint, input } from '@/components/ui/classes';
 import { useSupabaseSession } from '@/lib/supabase/use-session';
 import { getSignInUrl, SYLLA_DISCLAIMER } from '@/lib/sylla/config';
+import { useSignInUrl } from '@/lib/sylla/use-sign-in-url';
 import {
   clearLocalStudyData,
   updateSettings,
@@ -62,6 +63,7 @@ function Toggle({ checked, onChange, labelledBy }: { checked: boolean; onChange:
 export function SettingsScreen() {
   const settings = useSettings();
   const session = useSupabaseSession();
+  const signInUrl = useSignInUrl();
   const aiConfigured = useAIConfigured();
   const [confirmingClear, setConfirmingClear] = useState(false);
   const [cleared, setCleared] = useState(false);
@@ -193,7 +195,7 @@ export function SettingsScreen() {
           <p className="text-sm">
             You&apos;re browsing anonymously.{' '}
             <a
-              href={getSignInUrl()}
+              href={signInUrl}
               className="font-medium text-primary underline underline-offset-2"
             >
               Sign in with Syllabus Sync

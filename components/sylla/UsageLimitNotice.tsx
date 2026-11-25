@@ -1,7 +1,11 @@
-import { getSignInUrl, LIMIT_REACHED_MESSAGE } from '@/lib/sylla/config';
+'use client';
+
+import { LIMIT_REACHED_MESSAGE } from '@/lib/sylla/config';
+import { useSignInUrl } from '@/lib/sylla/use-sign-in-url';
 
 /** Shown in place of the input once the anonymous free-message limit is hit. */
 export function UsageLimitNotice() {
+  const signInUrl = useSignInUrl();
   return (
     <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 text-center sm:p-5">
       <p className="text-sm font-medium">Unlock Sylla with Syllabus Sync</p>
@@ -9,7 +13,7 @@ export function UsageLimitNotice() {
         {LIMIT_REACHED_MESSAGE}
       </p>
       <a
-        href={getSignInUrl()}
+        href={signInUrl}
         className="mt-3 inline-block rounded-xl bg-primary px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
       >
         Sign in with Syllabus Sync

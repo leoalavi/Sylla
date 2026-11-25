@@ -8,7 +8,7 @@ import { ChatComposer } from '@/components/chat/ChatComposer';
 import { ChatMessageItem, messageText } from '@/components/chat/ChatMessageItem';
 import { SyllaEmptyState } from '@/components/sylla/SyllaEmptyState';
 import { getConversation, createConversation, saveConversationMessages } from '@/lib/sylla/stores/conversations';
-import { getSignInUrl } from '@/lib/sylla/config';
+import { useSignInUrl } from '@/lib/sylla/use-sign-in-url';
 import { ANON_LIMITS, AUTH_LIMITS } from '@/lib/sylla/quota/limits';
 import { isAnonExhaustionCode, isLongWindowCode } from '@/lib/sylla/quota/errors';
 import { parseQuotaError } from '@/lib/sylla/quota/parse-error';
@@ -62,6 +62,7 @@ export function ChatView({
   );
   const idRef = useRef<string | null>(conversationId);
   const session = useSupabaseSession();
+  const signInUrl = useSignInUrl();
 
   const { messages, sendMessage, setMessages, status, error, regenerate, stop } = useChat({
     id: conversationId ?? undefined,
@@ -184,7 +185,7 @@ export function ChatView({
             <div className="flex items-center gap-2">
               {quotaError && isAnonExhaustionCode(quotaError.code) ? (
                 <a
-                  href={getSignInUrl()}
+                  href={signInUrl}
                   className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-hover"
                 >
                   Sign in with Syllabus Sync

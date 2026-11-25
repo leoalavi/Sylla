@@ -38,13 +38,31 @@ const DEFAULT_SYLLABUS_SYNC_URL = 'https://www.syllabus-sync.app';
  * the remaining work is deployment configuration, documented in
  * docs/sylla-architecture.md → "Auth & identity".
  */
-export function getSignInUrl(): string {
+export function getSignInUrl(returnTo?: string): string {
   const raw = process.env.NEXT_PUBLIC_SYLLABUS_SYNC_URL ?? DEFAULT_SYLLABUS_SYNC_URL;
+  let loginUrl: URL;
   try {
     const url = new URL(raw);
     if (url.protocol !== 'https:' && url.protocol !== 'http:') throw new Error('bad protocol');
-    return `${url.origin}/login`;
+    loginUrl = new URL('/login', url.origin);
   } catch {
-    return `${DEFAULT_SYLLABUS_SYNC_URL}/login`;
+    loginUrl = new URL('/login', DEFAULT_SYLLABUS_SYNC_URL);
+  }
+
+  // Ask Syllabus Sync to send the user back here after signing in. Syllabus
+  // Sync only honours this when Sylla's origin is in its
+  // NEXT_PUBLIC_TRUSTED_ORIGINS allowlist; otherwise it falls back to /home.
+  const back = safeHttpUrl(returnTo) ?? safeHttpUrl(process.env.NEXT_PUBLIC_SYLLA_URL);
+  if (back) loginUrl.searchParams.set('redirectTo', back);
+  return loginUrl.toString();
+}
+
+function safeHttpUrl(value: string | undefined): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : null;
+  } catch {
+    return null;
   }
 }

@@ -17,7 +17,8 @@ import { bumpNewChat } from '@/lib/sylla/stores/new-chat';
 import { ThemeController } from '@/components/shell/ThemeController';
 import { UnitContextPicker } from '@/components/shell/UnitContextPicker';
 import { useSupabaseSession } from '@/lib/supabase/use-session';
-import { getSignInUrl, SYLLA_DISCLAIMER } from '@/lib/sylla/config';
+import { SYLLA_DISCLAIMER } from '@/lib/sylla/config';
+import { useSignInUrl } from '@/lib/sylla/use-sign-in-url';
 
 interface NavItem {
   href: string;
@@ -58,6 +59,7 @@ function BrandMark() {
 
 function AccountSection() {
   const session = useSupabaseSession();
+  const signInUrl = useSignInUrl();
   if (!session.ready) {
     return <div className="h-9 animate-pulse rounded-xl bg-muted" />;
   }
@@ -77,7 +79,7 @@ function AccountSection() {
   }
   return (
     <a
-      href={getSignInUrl()}
+      href={signInUrl}
       className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-medium transition-colors hover:border-primary/60 hover:text-primary "
     >
       <UserCircle2 size={18} aria-hidden />
