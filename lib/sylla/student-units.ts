@@ -8,7 +8,8 @@ import type { StudyUnit } from '@/lib/sylla/types';
 // project), read with their session so Row Level Security applies. Held in
 // memory only and cleared on sign-out; never persisted in the browser.
 
-let units: StudyUnit[] = [];
+const NO_UNITS: StudyUnit[] = [];
+let units: StudyUnit[] = NO_UNITS;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -31,7 +32,8 @@ export function useStudentUnits(): StudyUnit[] {
       return () => listeners.delete(listener);
     },
     getStudentUnits,
-    () => [],
+    // Stable reference: a new [] per call makes React warn about an infinite loop.
+    () => NO_UNITS,
   );
 }
 

@@ -53,14 +53,16 @@ const QUICK_ACTIONS = [
   },
 ] as const;
 
-function greeting(): string {
-  const hour = new Date().getHours();
+function greeting(hour: number): string {
   if (hour < 5) return 'Late night session?';
   if (hour < 12) return 'Good morning';
   if (hour < 18) return 'Good afternoon';
   return 'Good evening';
 }
 
+// The greeting depends on the visitor's local time, which the server (UTC)
+// cannot know, so a neutral greeting is rendered until hydration. Rendering
+// the hour on the server caused a hydration mismatch (React error #418).
 export function HomeScreen() {
   const hydrated = useHydrated();
   const conversations = useConversations();
@@ -77,7 +79,7 @@ export function HomeScreen() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
       <header>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{greeting()}</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{hydrated ? greeting(new Date().getHours()) : 'Welcome'}</h1>
         <p className="mt-1.5 text-sm text-muted-foreground sm:text-base">
           {activeUnit
             ? `Studying for ${activeUnit.code} — ${activeUnit.name}. What do you want to work on?`
