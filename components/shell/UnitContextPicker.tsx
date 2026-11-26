@@ -3,16 +3,20 @@
 import { useId } from 'react';
 import { activeUnitStore, setActiveUnit } from '@/lib/sylla/stores/unit-context';
 import { SAMPLE_UNITS } from '@/lib/sylla/units';
+import { useStudentUnits } from '@/lib/sylla/student-units';
+import { useSupabaseSession } from '@/lib/supabase/use-session';
 import { hint } from '@/components/ui/classes';
 
 /**
- * Chooses the unit context Sylla responds in. Units shown here are SAMPLE
- * data — real enrolled units will come from the student's Syllabus Sync
- * account in a later phase (TODO in lib/sylla/units.ts).
+ * Chooses the unit context for a conversation. Signed-in students see their
+ * own Syllabus Sync units; signed-out visitors see labelled sample units.
  */
 export function UnitContextPicker({ compact = false }: { compact?: boolean }) {
   const selectId = useId();
   const activeId = activeUnitStore.use();
+  const session = useSupabaseSession();
+  const studentUnits = useStudentUnits();
+  const signedIn = session.isSignedIn;
 
   return (
     <div>
@@ -29,17 +33,33 @@ export function UnitContextPicker({ compact = false }: { compact?: boolean }) {
         className="w-full rounded-xl border border-border bg-input-bg px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
       >
         <option value="">General — no unit context</option>
-        <optgroup label="Sample units (development data)">
-          {SAMPLE_UNITS.map((unit) => (
-            <option key={unit.id} value={unit.id}>
-              {unit.code} — {unit.name}
-            </option>
-          ))}
-        </optgroup>
+        {signedIn ? (
+          studentUnits.length > 0 && (
+            <optgroup label="Your Syllabus Sync units">
+              {studentUnits.map((unit) => (
+                <option key={unit.id} value={unit.id}>
+                  {unit.code} — {unit.name}
+                </option>
+              ))}
+            </optgroup>
+          )
+        ) : (
+          <optgroup label="Sample units (sign in for your own)">
+            {SAMPLE_UNITS.map((unit) => (
+              <option key={unit.id} value={unit.id}>
+                {unit.code} — {unit.name}
+              </option>
+            ))}
+          </optgroup>
+        )}
       </select>
       {!compact && (
         <p className={`mt-1.5 ${hint}`}>
-          Sample units for now — your real Syllabus Sync units will connect in a later phase.
+          {signedIn
+            ? studentUnits.length > 0
+              ? 'Your units from Syllabus Sync.'
+              : 'Add units in Syllabus Sync to see them here.'
+            : 'Sample units. Sign in with Syllabus Sync to use your own.'}
         </p>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { getStudentUnits } from '@/lib/sylla/student-units';
 import type { StudyUnit } from '@/lib/sylla/types';
 
 /**
@@ -33,7 +34,8 @@ export const SAMPLE_UNITS: StudyUnit[] = [
   },
 ];
 
+/** A unit by id: the signed-in student's own units first, then sample data. */
 export function findUnit(id: string | null): StudyUnit | null {
   if (!id) return null;
-  return SAMPLE_UNITS.find((u) => u.id === id) ?? null;
+  return getStudentUnits().find((u) => u.id === id) ?? SAMPLE_UNITS.find((u) => u.id === id) ?? null;
 }

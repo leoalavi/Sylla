@@ -102,6 +102,12 @@ describe('StorageScopeSync', () => {
     vi.resetModules();
     vi.doMock('@/lib/supabase/client', () => ({
       getSupabaseBrowserClient: () => ({
+        from: () => {
+          const q: Record<string, unknown> = {};
+          for (const m of ['select', 'eq', 'is', 'order']) q[m] = () => q;
+          q.limit = async () => ({ data: [{ id: 'unit-1', code: 'COMP1010', name: 'Fundamentals' }], error: null });
+          return q;
+        },
         auth: {
           getSession: async () => ({ data: { session: { user: { id: 'user-a' } } } }),
           onAuthStateChange: (cb: typeof authListener) => {
@@ -112,13 +118,16 @@ describe('StorageScopeSync', () => {
       }),
     }));
     const store = await import('@/lib/sylla/store');
+    const units = await import('@/lib/sylla/student-units');
     const { StorageScopeSync } = await import('@/components/shell/StorageScopeSync');
     store.setStorageScope(null);
 
     render(createElement(StorageScopeSync));
     await waitFor(() => expect(store.getStorageScope()).toBe('u:user-a'));
+    await waitFor(() => expect(units.getStudentUnits().map((u) => u.code)).toEqual(['COMP1010']));
     authListener!('SIGNED_OUT', null);
     expect(store.getStorageScope()).toBe('anon');
+    expect(units.getStudentUnits()).toEqual([]);
     authListener!('SIGNED_IN', { user: { id: 'user-b' } });
     expect(store.getStorageScope()).toBe('u:user-b');
     vi.doUnmock('@/lib/supabase/client');
